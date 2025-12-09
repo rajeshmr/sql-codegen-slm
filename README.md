@@ -4,7 +4,7 @@ A fine-tuned Mistral-7B model that generates PostgreSQL queries from natural lan
 
 ## Project Status
 
-🚧 **In Progress - Module 1.1: Spider Dataset Download**
+🚧 **In Progress - Module 1.3: Mistral Format Conversion**
 
 ## Quick Start
 
@@ -115,6 +115,51 @@ data/raw/spider/
 **Reference:**
 - [Spider Dataset Paper](https://arxiv.org/abs/1809.08887)
 - [Spider Leaderboard](https://yale-lily.github.io/spider)
+
+## Data Processing Pipeline
+
+```
+Spider Dataset (Yale NLP)
+    │
+    ▼
+Module 1.1: Download
+    │   ./scripts/download_spider.sh
+    │   → data/raw/spider/
+    │
+    ▼
+Module 1.2: Parse Schemas
+    │   ./scripts/parse_schemas.sh
+    │   → data/processed/schemas/
+    │   → schema_index.json
+    │
+    ▼
+Module 1.3: Format for Mistral  ← CURRENT
+    │   ./scripts/convert_to_mistral.sh
+    │   → data/processed/train_mistral.jsonl
+    │   → data/processed/dev_mistral.jsonl
+    │
+    ▼
+Module 1.4: Convert to PostgreSQL (next)
+    │
+    ▼
+Ready for Fine-tuning
+```
+
+### Running the Pipeline
+
+```bash
+# Step 1: Download Spider dataset
+./scripts/download_spider.sh
+
+# Step 2: Parse and index schemas
+./scripts/parse_schemas.sh
+
+# Step 3: Convert to Mistral instruction format
+./scripts/convert_to_mistral.sh
+
+# Verify output
+head -1 data/processed/train_mistral.jsonl | python -m json.tool
+```
 
 ## License
 

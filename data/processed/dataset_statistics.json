@@ -1,0 +1,20 @@
+{
+  "total_examples": 6016,
+  "simple_select": 3693,
+  "with_join": 2323,
+  "with_group_by": 1522,
+  "with_subquery": 884,
+  "with_order_by": 1405,
+  "with_limit": 957,
+  "with_having": 365,
+  "with_distinct": 572,
+  "with_aggregation": 2766,
+  "percentages": {
+    "simple_select": 61.4,
+    "with_join": 38.6,
+    "with_group_by": 25.3,
+    "with_subquery": 14.7,
+    "with_order_by": 23.4,
+    "with_aggregation": 46.0
+  }
+}

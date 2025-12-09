@@ -24,6 +24,12 @@ data/processed/*
 data/processed/schemas/*_schema.sql
 !data/processed/schemas/schema_index.json
 
+# JSONL training files (large)
+data/processed/*.jsonl
+
+# Keep statistics file
+!data/processed/dataset_statistics.json
+
 # Model checkpoints (large files)
 training/models/*
 !training/models/.gitkeep
