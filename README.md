@@ -4,7 +4,7 @@ A fine-tuned Mistral-7B model that generates PostgreSQL queries from natural lan
 
 ## Project Status
 
-🚧 **In Progress - Module 0: Project Setup Complete**
+🚧 **In Progress - Module 1.1: Spider Dataset Download**
 
 ## Quick Start
 
@@ -66,6 +66,55 @@ source ./scripts/activate_env.sh
 # Verify setup
 ./scripts/verify_setup.sh
 ```
+
+## Data Download
+
+The project uses the [Spider dataset](https://yale-lily.github.io/spider) - a large-scale text-to-SQL benchmark from Yale containing 10,181 questions across 200+ databases.
+
+### Download Spider Dataset
+
+```bash
+# Download and extract Spider dataset
+./scripts/download_spider.sh
+
+# Verify the download
+python scripts/verify_spider.py
+```
+
+### Expected Output
+
+After successful download, `data/raw/spider/` will contain:
+
+```
+data/raw/spider/
+├── train_spider.json          # ~8,659 training examples
+├── train_others.json          # ~1,659 additional examples
+├── dev.json                   # ~1,034 validation examples
+├── tables.json                # Database schema definitions
+├── database/                  # 200+ SQLite databases
+│   ├── concert_singer/
+│   │   └── concert_singer.sqlite
+│   ├── pets_1/
+│   │   └── pets_1.sqlite
+│   └── ...
+└── download_summary.txt       # Download verification
+```
+
+### Troubleshooting
+
+**Download fails automatically:**
+- Visit https://yale-lily.github.io/spider manually
+- Download the Spider dataset zip file
+- Place it in `data/raw/spider/spider.zip`
+- Run `./scripts/download_spider.sh` again to extract
+
+**JSON parsing errors:**
+- Re-download the dataset (file may be corrupted)
+- Check if extraction completed fully
+
+**Reference:**
+- [Spider Dataset Paper](https://arxiv.org/abs/1809.08887)
+- [Spider Leaderboard](https://yale-lily.github.io/spider)
 
 ## License
 
