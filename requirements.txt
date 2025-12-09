@@ -4,3 +4,6 @@
 requests>=2.31.0
 tqdm>=4.66.0
 gdown>=5.1.0
+
+# Testing
+pytest>=7.4.0
