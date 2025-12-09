@@ -1,0 +1,22 @@
+{
+  "total_examples": 6681,
+  "examples_with_conversions": 6681,
+  "schema_conversions": {
+    "autoincrement_to_serial": 1218,
+    "pragma_removals": 4613,
+    "begin_transaction_removals": 345,
+    "commit_removals": 345,
+    "blob_to_bytea": 82,
+    "real_to_numeric": 18223
+  },
+  "query_conversions": {
+    "datetime_now": 0,
+    "date_now": 0,
+    "time_now": 0,
+    "strftime": 0,
+    "substr": 0
+  },
+  "patterns_found": {
+    "concatenation_operators": 0
+  }
+}

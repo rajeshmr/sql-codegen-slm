@@ -4,7 +4,7 @@ A fine-tuned Mistral-7B model that generates PostgreSQL queries from natural lan
 
 ## Project Status
 
-🚧 **In Progress - Module 1.3: Mistral Format Conversion**
+🚧 **In Progress - Module 1.4: PostgreSQL Conversion**
 
 ## Quick Start
 
@@ -133,13 +133,19 @@ Module 1.2: Parse Schemas
     │   → schema_index.json
     │
     ▼
-Module 1.3: Format for Mistral  ← CURRENT
+Module 1.3: Format for Mistral
     │   ./scripts/convert_to_mistral.sh
     │   → data/processed/train_mistral.jsonl
     │   → data/processed/dev_mistral.jsonl
     │
     ▼
-Module 1.4: Convert to PostgreSQL (next)
+Module 1.4: Convert to PostgreSQL  ← CURRENT
+    │   ./scripts/convert_to_postgres.sh
+    │   → data/processed/train_postgres.jsonl
+    │   → data/processed/dev_postgres.jsonl
+    │
+    ▼
+Module 1.5: Create splits (next)
     │
     ▼
 Ready for Fine-tuning
@@ -157,8 +163,11 @@ Ready for Fine-tuning
 # Step 3: Convert to Mistral instruction format
 ./scripts/convert_to_mistral.sh
 
+# Step 4: Convert SQLite to PostgreSQL syntax
+./scripts/convert_to_postgres.sh
+
 # Verify output
-head -1 data/processed/train_mistral.jsonl | python -m json.tool
+head -1 data/processed/train_postgres.jsonl | python -m json.tool
 ```
 
 ## License
