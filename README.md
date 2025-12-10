@@ -241,14 +241,55 @@ Each schema includes 10 sample questions ranging from simple to complex queries.
 
 See [docs/training_colab_setup.md](docs/training_colab_setup.md) for detailed instructions.
 
+## Pre-Training Validation
+
+**IMPORTANT:** Run validation before full training to catch issues early.
+
+### Quick Validation (10 minutes)
+
+1. Open `notebooks/validation_notebook.ipynb` in Colab
+2. Run all cells
+3. Verify all tests pass ✅
+
+### What Gets Validated
+
+- ✅ Data loading (20 examples)
+- ✅ Model initialization (4-bit + LoRA)
+- ✅ Training loop (20 steps)
+- ✅ Checkpoint saving to GCS
+- ✅ Checkpoint loading
+- ✅ Model inference (SQL generation)
+- ✅ GPU memory usage (<20GB)
+
+### Expected Validation Results
+
+- All tests pass ✅
+- Training loss decreases (3.5 → 1.5 in 20 steps)
+- Model generates valid SQL
+- Checkpoints save to GCS
+- Memory usage <20GB
+
+### If Validation Fails
+
+1. Check error messages carefully
+2. Verify GCS authentication
+3. Check GPU allocation (need A100 or V100)
+4. Review training/logs/ for details
+5. Ask for help with specific error
+
+### After Validation Passes
+
+✅ Ready for full training! Proceed to training section below.
+
 ## Training the Model
 
 ### Quick Start (Colab)
 
-1. Open `notebooks/train_colab.ipynb` in Google Colab
-2. Run all cells in order
-3. Training takes 8-12 hours on A100
-4. Model saves to GCS automatically
+1. **First**: Run validation notebook (see above)
+2. Open `notebooks/train_colab.ipynb` in Google Colab
+3. Run all cells in order
+4. Training takes 8-12 hours on A100
+5. Model saves to GCS automatically
 
 ### Manual Training
 

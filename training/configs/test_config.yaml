@@ -1,0 +1,64 @@
+# Test Configuration - Small scale for validation
+# Should complete in 10-15 minutes on A100
+# Module 2.3: Training Validation & Smoke Testing
+
+model:
+  name: "mistralai/Mistral-7B-v0.1"
+  max_seq_length: 512  # Shorter for faster testing
+  torch_dtype: "float16"
+
+lora:
+  r: 8  # Smaller rank for faster testing
+  lora_alpha: 16
+  lora_dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "v_proj"  # Only 2 modules for faster testing
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_compute_dtype: "float16"
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_quant_type: "nf4"
+
+training:
+  output_dir: "/content/test-models"
+  num_train_epochs: 1  # Just 1 epoch for testing
+  per_device_train_batch_size: 2
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 2
+  gradient_checkpointing: true
+  optim: "paged_adamw_32bit"
+  learning_rate: 0.0002
+  max_steps: 20  # Only 20 steps for testing
+  warmup_steps: 2
+  logging_steps: 2
+  save_strategy: "steps"
+  save_steps: 10  # Save checkpoint at step 10
+  evaluation_strategy: "steps"
+  eval_steps: 10
+  save_total_limit: 2
+  load_best_model_at_end: true
+  report_to: ["tensorboard"]
+  bf16: false  # Will be set based on GPU capability
+  fp16: true
+
+data:
+  train_file: "/content/data/train_postgres.jsonl"
+  val_file: "/content/data/val_postgres.jsonl"
+  max_samples_train: 20  # Only use 20 training examples
+  max_samples_val: 10    # Only use 10 validation examples
+
+logging:
+  project_name: "sql-codegen-slm-test"
+  run_name: "test-run"
+  log_dir: "/content/test-logs"
+  tensorboard_dir: "/content/test-tensorboard"
+
+# GCS settings for checkpoint syncing
+gcs:
+  bucket: "sql-codegen-slm-data"
+  test_prefix: "test-models"
+  sync_checkpoints: true
