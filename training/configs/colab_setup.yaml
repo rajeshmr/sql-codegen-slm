@@ -26,8 +26,8 @@ session:
 
 # Google Cloud Storage integration (faster than Drive)
 gcs:
-  project_id: "YOUR_PROJECT_ID"  # Replace with your GCP project
-  bucket_name: "sql-codegen-slm-data"  # Your bucket name
+  project_id: "your-gcp-project-id"
+  bucket_name: "sql-codegen-slm-data"
   data_prefix: "data/"
   models_prefix: "models/"
   logs_prefix: "logs/"

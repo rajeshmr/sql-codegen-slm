@@ -15,7 +15,7 @@ from typing import Any
 
 
 # Default GCS configuration
-DEFAULT_PROJECT_ID = "YOUR_PROJECT_ID"
+DEFAULT_PROJECT_ID = "your-gcp-project-id"
 DEFAULT_BUCKET_NAME = "sql-codegen-slm-data"
 
 
