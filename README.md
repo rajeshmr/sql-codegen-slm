@@ -241,6 +241,53 @@ Each schema includes 10 sample questions ranging from simple to complex queries.
 
 See [docs/training_colab_setup.md](docs/training_colab_setup.md) for detailed instructions.
 
+## Training the Model
+
+### Quick Start (Colab)
+
+1. Open `notebooks/train_colab.ipynb` in Google Colab
+2. Run all cells in order
+3. Training takes 8-12 hours on A100
+4. Model saves to GCS automatically
+
+### Manual Training
+
+```bash
+python -m training.train \
+  --config training/configs/mistral_lora_config.yaml
+```
+
+### Resume from Checkpoint
+
+```bash
+python -m training.train \
+  --config training/configs/mistral_lora_config.yaml \
+  --resume
+```
+
+### Monitoring Training
+
+- **TensorBoard**: View in Colab or locally
+  ```python
+  %tensorboard --logdir /content/tensorboard
+  ```
+- **Logs**: Check `/content/logs/` for detailed logs
+- **Checkpoints**: Every 500 steps synced to GCS
+
+### Training Output
+
+- **LoRA adapters**: ~100MB
+- **Location**: `gs://sql-codegen-slm-data/models/`
+- **Files**: `adapter_model.bin`, `adapter_config.json`, tokenizer
+
+### Expected Results
+
+| Metric | Expected Value |
+|--------|----------------|
+| Training loss | ~0.5-1.0 |
+| Validation loss | ~1.0-1.5 |
+| Training time | 8-12 hours (A100) |
+
 ## License
 
 MIT
