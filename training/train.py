@@ -186,7 +186,7 @@ def setup_training_args(
         logging_dir=logging_dir,
         save_strategy=train_config.get("save_strategy", "steps"),
         save_steps=train_config.get("save_steps", 500),
-        evaluation_strategy=train_config.get("evaluation_strategy", "steps"),
+        eval_strategy=train_config.get("eval_strategy", train_config.get("evaluation_strategy", "steps")),
         eval_steps=train_config.get("eval_steps", 500),
         save_total_limit=train_config.get("save_total_limit", 2),
         load_best_model_at_end=train_config.get("load_best_model_at_end", True),
