@@ -1,7 +1,3 @@
-**Excellent! Here's Module 1.5:**
-
----
-
 # MODULE 1.5: Create Data Splits and Generate Demo Schemas
 
 **Objective:** Finalize train/validation splits, create a separate test set, and generate 5 demo schemas for the frontend
@@ -562,9 +558,3 @@ Demo schemas created: 5
 
 Ready for Module 2: Model Training 🚀
 ```
-
----
-
-**Once all checks pass, reply "Module 1 complete - Data Pipeline finished" and I'll provide Module 2.1!** 🚀
-
-**Learning Questions (answer before moving on):**
