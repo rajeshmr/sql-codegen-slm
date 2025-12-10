@@ -1,0 +1,129 @@
+{
+  "ecommerce": {
+    "schema_file": "data/demo/ecommerce_schema.sql",
+    "name": "E-commerce Platform",
+    "description": "Online retail platform with orders, products, customers, and reviews",
+    "tables": [
+      "customers",
+      "products",
+      "categories",
+      "orders",
+      "order_items",
+      "reviews"
+    ],
+    "sample_questions": [
+      "Show all customers who placed orders in the last 30 days",
+      "What is the average order value?",
+      "List top 5 products by total revenue",
+      "Show customers with more than 10 orders",
+      "Find products with average rating above 4.5",
+      "What are the best-selling products by quantity?",
+      "Show orders that are still pending",
+      "List all products that are out of stock",
+      "Find customers who have never placed an order",
+      "What is the total revenue by category?"
+    ]
+  },
+  "finance": {
+    "schema_file": "data/demo/finance_schema.sql",
+    "name": "Banking System",
+    "description": "Financial accounts, transactions, loans, and credit cards",
+    "tables": [
+      "customers",
+      "accounts",
+      "transactions",
+      "loans",
+      "credit_cards"
+    ],
+    "sample_questions": [
+      "Show total balance across all accounts",
+      "List customers with loans over $50,000",
+      "Show transaction history for last month",
+      "Find accounts with negative balance",
+      "Calculate total interest paid on loans",
+      "What is the average credit score of customers?",
+      "Show customers with multiple accounts",
+      "Find overdue credit card payments",
+      "What is the total loan amount by loan type?",
+      "List the top 10 highest value transactions"
+    ]
+  },
+  "healthcare": {
+    "schema_file": "data/demo/healthcare_schema.sql",
+    "name": "Healthcare System",
+    "description": "Patient records, appointments, doctors, and prescriptions",
+    "tables": [
+      "patients",
+      "doctors",
+      "departments",
+      "appointments",
+      "prescriptions",
+      "medical_records"
+    ],
+    "sample_questions": [
+      "Show all appointments for today",
+      "List doctors by department",
+      "Find patients with upcoming appointments",
+      "Show prescription history for a patient",
+      "How many appointments does each doctor have this week?",
+      "List patients who haven't visited in over a year",
+      "Find the busiest department by appointment count",
+      "Show all active prescriptions",
+      "What is the average appointment duration by specialization?",
+      "List patients with known allergies"
+    ]
+  },
+  "saas": {
+    "schema_file": "data/demo/saas_schema.sql",
+    "name": "SaaS Platform",
+    "description": "Software-as-a-Service with users, subscriptions, and usage tracking",
+    "tables": [
+      "organizations",
+      "users",
+      "plans",
+      "subscriptions",
+      "features",
+      "usage_logs"
+    ],
+    "sample_questions": [
+      "Show all active subscriptions by plan",
+      "List organizations with expired subscriptions",
+      "How many users does each organization have?",
+      "Show feature usage statistics for last week",
+      "Find users who haven't logged in for 30 days",
+      "What is the monthly recurring revenue (MRR)?",
+      "List the most used features",
+      "Show organizations on the enterprise plan",
+      "Find users with admin role",
+      "What is the churn rate by plan?"
+    ]
+  },
+  "retail": {
+    "schema_file": "data/demo/retail_schema.sql",
+    "name": "Retail Chain",
+    "description": "Multi-store retail with inventory, sales, and employee management",
+    "tables": [
+      "stores",
+      "employees",
+      "products",
+      "inventory",
+      "sales"
+    ],
+    "sample_questions": [
+      "Show total sales by store for this month",
+      "List products that need restocking",
+      "Find the top-selling products",
+      "Show employee sales performance",
+      "What is the average transaction value by store?",
+      "List stores with the highest revenue",
+      "Find products with low inventory across all stores",
+      "Show sales trends by day of week",
+      "Which employees have the highest sales?",
+      "What is the profit margin by product category?"
+    ]
+  },
+  "_metadata": {
+    "created_at": "2025-12-10T07:41:16.973637",
+    "total_schemas": 5
+  }
+}

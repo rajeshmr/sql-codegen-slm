@@ -4,7 +4,7 @@ A fine-tuned Mistral-7B model that generates PostgreSQL queries from natural lan
 
 ## Project Status
 
-🚧 **In Progress - Module 1.4: PostgreSQL Conversion**
+✅ **Module 1 Complete - Data Pipeline Ready for Training**
 
 ## Quick Start
 
@@ -139,16 +139,20 @@ Module 1.3: Format for Mistral
     │   → data/processed/dev_mistral.jsonl
     │
     ▼
-Module 1.4: Convert to PostgreSQL  ← CURRENT
+Module 1.4: Convert to PostgreSQL
     │   ./scripts/convert_to_postgres.sh
     │   → data/processed/train_postgres.jsonl
     │   → data/processed/dev_postgres.jsonl
     │
     ▼
-Module 1.5: Create splits (next)
+Module 1.5: Create Splits + Demo Schemas  ✅ COMPLETE
+    │   ./scripts/finalize_data.sh
+    │   → data/processed/val_postgres.jsonl
+    │   → data/processed/test_postgres.jsonl
+    │   → data/demo/*.sql
     │
     ▼
-Ready for Fine-tuning
+READY FOR TRAINING 🚀
 ```
 
 ### Running the Pipeline
@@ -166,9 +170,34 @@ Ready for Fine-tuning
 # Step 4: Convert SQLite to PostgreSQL syntax
 ./scripts/convert_to_postgres.sh
 
+# Step 5: Create train/val/test splits and demo schemas
+./scripts/finalize_data.sh
+
 # Verify output
 head -1 data/processed/train_postgres.jsonl | python -m json.tool
 ```
+
+### Final Dataset
+
+| Split | Examples | Description |
+|-------|----------|-------------|
+| Training | 6,016 | For model fine-tuning |
+| Validation | 332 | For hyperparameter tuning |
+| Test | 333 | For final evaluation |
+
+## Demo Schemas
+
+Five polished demo schemas for the web UI:
+
+| Domain | Tables | Description |
+|--------|--------|-------------|
+| **E-commerce** | customers, products, orders, order_items, reviews | Online retail platform |
+| **Finance** | customers, accounts, transactions, loans, credit_cards | Banking system |
+| **Healthcare** | patients, doctors, departments, appointments, prescriptions | Hospital management |
+| **SaaS** | organizations, users, plans, subscriptions, features | Multi-tenant platform |
+| **Retail** | stores, employees, products, inventory, sales | Multi-store retail |
+
+Each schema includes 10 sample questions ranging from simple to complex queries.
 
 ## License
 

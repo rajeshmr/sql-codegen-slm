@@ -1,0 +1,37 @@
+{
+  "created_at": "2025-12-10T07:38:34.322397",
+  "random_seed": 42,
+  "train": {
+    "file": "data/processed/train_postgres.jsonl",
+    "count": 6016,
+    "databases": 127,
+    "complexity_distribution": {
+      "simple": 2369,
+      "complex": 1239,
+      "medium": 2317,
+      "very_complex": 91
+    }
+  },
+  "validation": {
+    "file": "data/processed/val_postgres.jsonl",
+    "count": 332,
+    "databases": 15,
+    "complexity_distribution": {
+      "complex": 63,
+      "medium": 127,
+      "simple": 138,
+      "very_complex": 4
+    }
+  },
+  "test": {
+    "file": "data/processed/test_postgres.jsonl",
+    "count": 333,
+    "databases": 15,
+    "complexity_distribution": {
+      "complex": 63,
+      "simple": 139,
+      "medium": 127,
+      "very_complex": 4
+    }
+  }
+}

@@ -1,20 +1,421 @@
 {
-  "total_examples": 6016,
-  "simple_select": 3693,
-  "with_join": 2323,
-  "with_group_by": 1522,
-  "with_subquery": 884,
-  "with_order_by": 1405,
-  "with_limit": 957,
-  "with_having": 365,
-  "with_distinct": 572,
-  "with_aggregation": 2766,
-  "percentages": {
-    "simple_select": 61.4,
-    "with_join": 38.6,
-    "with_group_by": 25.3,
-    "with_subquery": 14.7,
-    "with_order_by": 23.4,
-    "with_aggregation": 46.0
-  }
+  "generated_at": "2025-12-10T07:41:17.020011",
+  "splits": {
+    "train": {
+      "file": "train_postgres.jsonl",
+      "count": 6016,
+      "databases": 127,
+      "complexity_distribution": {
+        "simple": 2369,
+        "complex": 1040,
+        "medium": 2317,
+        "very_complex": 290
+      },
+      "sql_features": {
+        "has_aggregation": {
+          "count": 2766,
+          "percentage": 46.0
+        },
+        "has_avg": {
+          "count": 415,
+          "percentage": 6.9
+        },
+        "has_between": {
+          "count": 62,
+          "percentage": 1.0
+        },
+        "has_delete": {
+          "count": 2,
+          "percentage": 0.0
+        },
+        "has_distinct": {
+          "count": 572,
+          "percentage": 9.5
+        },
+        "has_except": {
+          "count": 185,
+          "percentage": 3.1
+        },
+        "has_group_by": {
+          "count": 1522,
+          "percentage": 25.3
+        },
+        "has_having": {
+          "count": 365,
+          "percentage": 6.1
+        },
+        "has_in": {
+          "count": 232,
+          "percentage": 3.9
+        },
+        "has_intersect": {
+          "count": 231,
+          "percentage": 3.8
+        },
+        "has_join": {
+          "count": 2323,
+          "percentage": 38.6
+        },
+        "has_like": {
+          "count": 138,
+          "percentage": 2.3
+        },
+        "has_limit": {
+          "count": 957,
+          "percentage": 15.9
+        },
+        "has_max": {
+          "count": 203,
+          "percentage": 3.4
+        },
+        "has_min": {
+          "count": 154,
+          "percentage": 2.6
+        },
+        "has_order_by": {
+          "count": 1405,
+          "percentage": 23.4
+        },
+        "has_select": {
+          "count": 6016,
+          "percentage": 100.0
+        },
+        "has_subquery": {
+          "count": 884,
+          "percentage": 14.7
+        },
+        "has_sum": {
+          "count": 228,
+          "percentage": 3.8
+        },
+        "has_union": {
+          "count": 63,
+          "percentage": 1.0
+        },
+        "has_where": {
+          "count": 2926,
+          "percentage": 48.6
+        }
+      },
+      "token_stats": {
+        "schema_chars": {
+          "min": 784,
+          "max": 322070090,
+          "avg": 1662325.2,
+          "median": 5488
+        },
+        "question_chars": {
+          "min": 16,
+          "max": 224,
+          "avg": 70.6,
+          "median": 69
+        },
+        "sql_chars": {
+          "min": 21,
+          "max": 508,
+          "avg": 107.7,
+          "median": 91
+        },
+        "schema_tokens": {
+          "min": 86,
+          "max": 2269912,
+          "avg": 43009.5,
+          "median": 615
+        },
+        "question_tokens": {
+          "min": 3,
+          "max": 39,
+          "avg": 12.7,
+          "median": 12
+        },
+        "sql_tokens": {
+          "min": 4,
+          "max": 69,
+          "avg": 15.6,
+          "median": 13
+        }
+      },
+      "complexity_percentages": {
+        "simple": 39.4,
+        "complex": 17.3,
+        "medium": 38.5,
+        "very_complex": 4.8
+      }
+    },
+    "validation": {
+      "file": "val_postgres.jsonl",
+      "count": 332,
+      "databases": 15,
+      "complexity_distribution": {
+        "complex": 52,
+        "medium": 127,
+        "simple": 138,
+        "very_complex": 15
+      },
+      "sql_features": {
+        "has_aggregation": {
+          "count": 156,
+          "percentage": 47.0
+        },
+        "has_avg": {
+          "count": 17,
+          "percentage": 5.1
+        },
+        "has_between": {
+          "count": 3,
+          "percentage": 0.9
+        },
+        "has_distinct": {
+          "count": 28,
+          "percentage": 8.4
+        },
+        "has_except": {
+          "count": 9,
+          "percentage": 2.7
+        },
+        "has_group_by": {
+          "count": 93,
+          "percentage": 28.0
+        },
+        "has_having": {
+          "count": 25,
+          "percentage": 7.5
+        },
+        "has_in": {
+          "count": 19,
+          "percentage": 5.7
+        },
+        "has_intersect": {
+          "count": 13,
+          "percentage": 3.9
+        },
+        "has_join": {
+          "count": 128,
+          "percentage": 38.6
+        },
+        "has_like": {
+          "count": 13,
+          "percentage": 3.9
+        },
+        "has_limit": {
+          "count": 58,
+          "percentage": 17.5
+        },
+        "has_max": {
+          "count": 12,
+          "percentage": 3.6
+        },
+        "has_min": {
+          "count": 6,
+          "percentage": 1.8
+        },
+        "has_order_by": {
+          "count": 81,
+          "percentage": 24.4
+        },
+        "has_select": {
+          "count": 332,
+          "percentage": 100.0
+        },
+        "has_subquery": {
+          "count": 50,
+          "percentage": 15.1
+        },
+        "has_sum": {
+          "count": 8,
+          "percentage": 2.4
+        },
+        "has_union": {
+          "count": 4,
+          "percentage": 1.2
+        },
+        "has_where": {
+          "count": 130,
+          "percentage": 39.2
+        }
+      },
+      "token_stats": {
+        "schema_chars": {
+          "min": 1378,
+          "max": 30731,
+          "avg": 9875.8,
+          "median": 4094
+        },
+        "question_chars": {
+          "min": 22,
+          "max": 144,
+          "avg": 69.5,
+          "median": 67
+        },
+        "sql_chars": {
+          "min": 21,
+          "max": 354,
+          "avg": 103.1,
+          "median": 86
+        },
+        "schema_tokens": {
+          "min": 129,
+          "max": 2766,
+          "avg": 920.5,
+          "median": 427
+        },
+        "question_tokens": {
+          "min": 4,
+          "max": 27,
+          "avg": 12.8,
+          "median": 13
+        },
+        "sql_tokens": {
+          "min": 4,
+          "max": 58,
+          "avg": 14.9,
+          "median": 12
+        }
+      },
+      "complexity_percentages": {
+        "complex": 15.7,
+        "medium": 38.3,
+        "simple": 41.6,
+        "very_complex": 4.5
+      }
+    },
+    "test": {
+      "file": "test_postgres.jsonl",
+      "count": 333,
+      "databases": 15,
+      "complexity_distribution": {
+        "complex": 47,
+        "very_complex": 20,
+        "simple": 139,
+        "medium": 127
+      },
+      "sql_features": {
+        "has_aggregation": {
+          "count": 171,
+          "percentage": 51.4
+        },
+        "has_avg": {
+          "count": 18,
+          "percentage": 5.4
+        },
+        "has_between": {
+          "count": 1,
+          "percentage": 0.3
+        },
+        "has_distinct": {
+          "count": 24,
+          "percentage": 7.2
+        },
+        "has_except": {
+          "count": 14,
+          "percentage": 4.2
+        },
+        "has_group_by": {
+          "count": 91,
+          "percentage": 27.3
+        },
+        "has_having": {
+          "count": 25,
+          "percentage": 7.5
+        },
+        "has_in": {
+          "count": 22,
+          "percentage": 6.6
+        },
+        "has_intersect": {
+          "count": 12,
+          "percentage": 3.6
+        },
+        "has_join": {
+          "count": 117,
+          "percentage": 35.1
+        },
+        "has_like": {
+          "count": 14,
+          "percentage": 4.2
+        },
+        "has_limit": {
+          "count": 55,
+          "percentage": 16.5
+        },
+        "has_max": {
+          "count": 14,
+          "percentage": 4.2
+        },
+        "has_min": {
+          "count": 8,
+          "percentage": 2.4
+        },
+        "has_order_by": {
+          "count": 75,
+          "percentage": 22.5
+        },
+        "has_select": {
+          "count": 333,
+          "percentage": 100.0
+        },
+        "has_subquery": {
+          "count": 57,
+          "percentage": 17.1
+        },
+        "has_sum": {
+          "count": 5,
+          "percentage": 1.5
+        },
+        "has_union": {
+          "count": 1,
+          "percentage": 0.3
+        },
+        "has_where": {
+          "count": 136,
+          "percentage": 40.8
+        }
+      },
+      "token_stats": {
+        "schema_chars": {
+          "min": 1378,
+          "max": 30731,
+          "avg": 9263.1,
+          "median": 4094
+        },
+        "question_chars": {
+          "min": 18,
+          "max": 152,
+          "avg": 68.0,
+          "median": 66
+        },
+        "sql_chars": {
+          "min": 21,
+          "max": 313,
+          "avg": 97.9,
+          "median": 83
+        },
+        "schema_tokens": {
+          "min": 129,
+          "max": 2766,
+          "avg": 871.2,
+          "median": 427
+        },
+        "question_tokens": {
+          "min": 4,
+          "max": 28,
+          "avg": 12.5,
+          "median": 12
+        },
+        "sql_tokens": {
+          "min": 4,
+          "max": 58,
+          "avg": 14.5,
+          "median": 12
+        }
+      },
+      "complexity_percentages": {
+        "complex": 14.1,
+        "very_complex": 6.0,
+        "simple": 41.7,
+        "medium": 38.1
+      }
+    }
+  },
+  "total_examples": 6681
 }

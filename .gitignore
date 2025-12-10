@@ -27,9 +27,14 @@ data/processed/schemas/*_schema.sql
 # JSONL training files (large)
 data/processed/*.jsonl
 
-# Keep statistics files
+# Keep statistics and metadata files
 !data/processed/dataset_statistics.json
 !data/processed/postgres_conversion_stats.json
+!data/processed/split_info.json
+
+# Demo schemas (small, useful for repo)
+!data/demo/
+data/demo/*.gitkeep
 
 # Model checkpoints (large files)
 training/models/*
