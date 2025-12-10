@@ -87,7 +87,7 @@ notebook = {
                 "import os\n",
                 "\n",
                 "GITHUB_TOKEN = getpass('GitHub Token: ')\n",
-                "GITHUB_USER = 'your-github-username'\n",
+                "GITHUB_USER = 'your-github-username'  # Replace with your GitHub username\n",
                 "REPO = 'sql-codegen-slm'\n",
                 "\n",
                 "if not os.path.exists(REPO):\n",
