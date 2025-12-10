@@ -4,7 +4,7 @@ A fine-tuned Mistral-7B model that generates PostgreSQL queries from natural lan
 
 ## Project Status
 
-✅ **Module 1 Complete - Data Pipeline Ready for Training**
+🚧 **In Progress - Module 2.1: Training Environment Setup**
 
 ## Quick Start
 
@@ -198,6 +198,38 @@ Five polished demo schemas for the web UI:
 | **Retail** | stores, employees, products, inventory, sales | Multi-store retail |
 
 Each schema includes 10 sample questions ranging from simple to complex queries.
+
+## Training Setup
+
+### Local Setup (for testing)
+
+```bash
+./scripts/setup_training_env.sh
+python -m training.environment_setup
+```
+
+### GCP Setup (for actual training)
+
+```bash
+# 1. Set your GCP project ID
+export GCP_PROJECT_ID=your-project-id
+
+# 2. Create training instance
+./scripts/gcp/create_training_instance.sh
+
+# 3. Sync data
+./scripts/gcp/sync_data_to_gcp.sh
+
+# 4. Connect to instance
+./scripts/gcp/connect_to_instance.sh
+
+# 5. After training, stop instance
+./scripts/gcp/stop_instance.sh
+```
+
+**Estimated cost:** $35-53 for full training run (8-12 hours on A100)
+
+See [docs/training_setup.md](docs/training_setup.md) for detailed instructions.
 
 ## License
 

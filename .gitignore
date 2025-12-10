@@ -45,6 +45,10 @@ training/models/*
 training/logs/*
 !training/logs/.gitkeep
 
+# TensorBoard logs
+training/tensorboard/*
+!training/tensorboard/.gitkeep
+
 # Environment files
 .env
 .env.local

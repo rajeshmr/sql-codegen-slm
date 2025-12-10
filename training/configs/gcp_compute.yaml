@@ -1,0 +1,64 @@
+# GCP Compute Configuration for Training
+# SQL Codegen SLM - Mistral-7B Fine-tuning
+
+# Compute Engine Configuration
+compute:
+  project_id: "YOUR_PROJECT_ID"        # Replace with your GCP project ID
+  zone: "us-central1-a"                # Zone with A100 availability
+  region: "us-central1"
+  instance_name: "sql-codegen-training"
+  machine_type: "n1-highmem-8"         # 8 vCPUs, 52GB RAM
+  gpu_type: "nvidia-tesla-a100"        # A100 40GB VRAM
+  gpu_count: 1
+  boot_disk_size_gb: 200
+  boot_disk_type: "pd-ssd"
+
+# VM Image Configuration
+vm:
+  image_project: "deeplearning-platform-release"
+  image_family: "common-cu121-ubuntu-2204"  # CUDA 12.1, Ubuntu 22.04
+  python_version: "3.10"
+
+# Network Configuration
+network:
+  network: "default"
+  allow_ssh: true
+  allow_tensorboard: true              # Port 6006
+  allow_jupyter: true                  # Port 8888
+
+# Cost Estimation (per hour, us-central1)
+cost:
+  machine_n1_highmem_8: "$0.47/hour"
+  gpu_a100_40gb: "$3.67/hour"
+  disk_ssd_200gb: "$0.27/hour"
+  total_estimated: "$4.41/hour"
+
+# Training Time Estimates
+estimates:
+  examples: 6016                       # Training examples
+  epochs: 3
+  batch_size_effective: 16             # 4 * 4 gradient accumulation
+  steps_per_epoch: 376                 # 6016 / 16
+  total_steps: 1128                    # 376 * 3
+  estimated_time_hours: "8-12"
+  total_cost_estimate: "$35-53"
+
+# Alternative Configurations (for cost optimization)
+alternatives:
+  # Cheaper option with T4 (slower training)
+  budget:
+    machine_type: "n1-standard-4"
+    gpu_type: "nvidia-tesla-t4"
+    gpu_count: 1
+    estimated_cost: "$1.50/hour"
+    estimated_time: "24-36 hours"
+    total_cost: "$36-54"
+  
+  # Faster option with multiple A100s
+  performance:
+    machine_type: "a2-highgpu-2g"
+    gpu_type: "nvidia-tesla-a100"
+    gpu_count: 2
+    estimated_cost: "$8.00/hour"
+    estimated_time: "4-6 hours"
+    total_cost: "$32-48"

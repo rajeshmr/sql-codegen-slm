@@ -1,0 +1,73 @@
+# Mistral-7B LoRA Fine-tuning Configuration
+# SQL Code Generation for PostgreSQL
+
+# Model Configuration
+model:
+  name: "mistralai/Mistral-7B-v0.1"
+  max_seq_length: 2048
+  torch_dtype: "float16"
+
+# LoRA Configuration
+lora:
+  r: 16                          # LoRA rank - lower = fewer params, faster but less expressive
+  lora_alpha: 32                 # LoRA scaling factor (alpha/r = 2 is standard)
+  lora_dropout: 0.05             # Dropout for regularization
+  target_modules:
+    - "q_proj"                   # Query projection
+    - "k_proj"                   # Key projection
+    - "v_proj"                   # Value projection
+    - "o_proj"                   # Output projection
+    - "gate_proj"                # MLP gate
+    - "up_proj"                  # MLP up projection
+    - "down_proj"                # MLP down projection
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+# Quantization Configuration (4-bit for memory efficiency)
+quantization:
+  load_in_4bit: true
+  bnb_4bit_compute_dtype: "float16"
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_quant_type: "nf4"     # NormalFloat4 - best for LLMs
+
+# Training Configuration
+training:
+  output_dir: "./training/models/mistral-sql-postgres"
+  num_train_epochs: 3
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 4  # Effective batch size = 4 * 4 = 16
+  gradient_checkpointing: true    # Save memory at cost of speed
+  optim: "paged_adamw_32bit"      # Memory-efficient optimizer
+  learning_rate: 0.0002           # 2e-4, standard for LoRA
+  weight_decay: 0.001
+  warmup_ratio: 0.03              # 3% of steps for warmup
+  lr_scheduler_type: "cosine"
+  max_grad_norm: 0.3
+  fp16: false
+  bf16: true                      # Better precision than fp16
+  logging_steps: 10
+  save_strategy: "epoch"
+  evaluation_strategy: "epoch"
+  save_total_limit: 3             # Keep only 3 best checkpoints
+  load_best_model_at_end: true
+  metric_for_best_model: "eval_loss"
+  greater_is_better: false
+  report_to: ["tensorboard", "wandb"]
+  remove_unused_columns: false
+
+# Data Configuration
+data:
+  train_file: "data/processed/train_postgres.jsonl"
+  val_file: "data/processed/val_postgres.jsonl"
+  test_file: "data/processed/test_postgres.jsonl"
+  text_column: "text"
+  max_samples_train: null         # null = use all samples
+  max_samples_val: null
+
+# Logging Configuration
+logging:
+  project_name: "sql-codegen-slm"
+  run_name: "mistral-7b-lora-sql"
+  log_dir: "./training/logs"
+  tensorboard_dir: "./training/tensorboard"
