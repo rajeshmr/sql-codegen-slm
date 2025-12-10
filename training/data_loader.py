@@ -108,7 +108,8 @@ class SQLDataset(Dataset):
         data_file: str,
         tokenizer: PreTrainedTokenizer,
         max_seq_length: int = 2048,
-        cache_tokenized: bool = True
+        cache_tokenized: bool = True,
+        max_samples: Optional[int] = None
     ):
         """
         Initialize the dataset.
@@ -118,6 +119,7 @@ class SQLDataset(Dataset):
             tokenizer: HuggingFace tokenizer
             max_seq_length: Maximum sequence length
             cache_tokenized: Whether to cache tokenized examples in memory
+            max_samples: Optional limit on number of samples to load (for testing)
         """
         self.tokenizer = tokenizer
         self.max_seq_length = max_seq_length
@@ -125,10 +127,10 @@ class SQLDataset(Dataset):
         self.cache: Dict[int, Dict[str, torch.Tensor]] = {}
         
         # Load examples from JSONL
-        self.examples = self._load_jsonl(data_file)
+        self.examples = self._load_jsonl(data_file, max_samples)
         logger.info(f"Loaded {len(self.examples)} examples from {data_file}")
     
-    def _load_jsonl(self, file_path: str) -> List[Dict[str, Any]]:
+    def _load_jsonl(self, file_path: str, max_samples: Optional[int] = None) -> List[Dict[str, Any]]:
         """Load examples from JSONL file."""
         examples = []
         path = Path(file_path)
@@ -142,6 +144,9 @@ class SQLDataset(Dataset):
                 if line:
                     try:
                         examples.append(json.loads(line))
+                        # Stop if we've reached max_samples
+                        if max_samples and len(examples) >= max_samples:
+                            break
                     except json.JSONDecodeError as e:
                         logger.warning(f"Skipping invalid JSON at line {line_num}: {e}")
         
@@ -202,7 +207,8 @@ def load_training_data(
     train_file: str,
     val_file: str,
     tokenizer: PreTrainedTokenizer,
-    max_seq_length: int = 2048
+    max_seq_length: int = 2048,
+    max_samples: Optional[int] = None
 ) -> Tuple[SQLDataset, SQLDataset]:
     """
     Load training and validation datasets.
@@ -215,6 +221,7 @@ def load_training_data(
         val_file: Path to validation JSONL file
         tokenizer: HuggingFace tokenizer
         max_seq_length: Maximum sequence length for tokenization
+        max_samples: Optional limit on number of samples to load (for testing)
         
     Returns:
         Tuple of (train_dataset, val_dataset)
@@ -224,7 +231,8 @@ def load_training_data(
         data_file=train_file,
         tokenizer=tokenizer,
         max_seq_length=max_seq_length,
-        cache_tokenized=True
+        cache_tokenized=True,
+        max_samples=max_samples
     )
     
     logger.info(f"Loading validation data from {val_file}")
@@ -232,7 +240,8 @@ def load_training_data(
         data_file=val_file,
         tokenizer=tokenizer,
         max_seq_length=max_seq_length,
-        cache_tokenized=True
+        cache_tokenized=True,
+        max_samples=max_samples
     )
     
     logger.info(f"Dataset sizes - Train: {len(train_dataset)}, Val: {len(val_dataset)}")
