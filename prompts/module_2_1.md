@@ -1,49 +1,47 @@
-# MODULE 2.1: Training Environment Setup
+## Cost Comparison: Colab Pro+ vs GCP
 
-**Objective:** Configure training environment with all dependencies, create training configuration files, and setup GCP compute for fine-tuning
+| Factor | GCP A100 | Colab Pro+ |
+|--------|----------|------------|
+| **Upfront cost** | $0 | $58.99/month |
+| **Cost per training run** | $35-53 (8-12 hours) | Included in subscription |
+| **Multiple runs** | $35 each | Free after subscription |
+| **Best for** | One-time training | Learning/experimentation |
+
+**For your learning project:**
+- You'll likely do 3-5 training runs (tuning hyperparameters, fixing bugs, etc.)
+- GCP: 5 runs × $40 = **$200**
+- Colab Pro+: **$58.99** (covers unlimited runs for 1 month)
+
+**You're saving $140+** 🎉
+
+---
+
+## Module 2.1 REVISED: Colab Pro+ Setup
+
+Let me give you an **updated prompt** that replaces GCP with Colab Pro+:
+
+---
+
+# MODULE 2.1 (REVISED): Training Environment Setup for Colab Pro+
+
+**Objective:** Configure training environment optimized for Colab Pro+ with all dependencies and training configurations
 
 ---
 
 ## PROMPT FOR AI IDE (Windsurf/Claude):
 
 ### Context
-You are working on sql-codegen-slm project. We have 8,234 training examples ready for fine-tuning Mistral-7B. We need to set up the complete training environment including: PyTorch, Transformers, PEFT (for LoRA), training configurations, and GCP compute setup scripts. Training will use 4-bit quantization with LoRA for memory efficiency.
+You are working on sql-codegen-slm project. We have 8,234 training examples ready for fine-tuning Mistral-7B. Training will run on Google Colab Pro+ which provides A100 GPU access. We need to set up the environment for Colab with proper data upload handling, session management, and checkpoint saving to Google Drive.
 
-### Task: Setup Training Infrastructure
+### Task: Setup Training Infrastructure for Colab Pro+
 
 **Location:** `training/requirements.txt`
 
-**Create training-specific requirements file:**
-```
-# Core ML libraries
-torch==2.1.2
-transformers==4.36.2
-peft==0.7.1
-accelerate==0.25.0
-bitsandbytes==0.41.3
-trl==0.7.10
-
-# Data handling
-datasets==2.15.0
-tokenizers==0.15.0
-
-# Training utilities
-wandb==0.16.1
-tensorboard==2.15.1
-scipy==1.11.4
-
-# Evaluation
-scikit-learn==1.3.2
-rouge-score==0.1.2
-
-# Google Cloud (for GCP deployment)
-google-cloud-storage==2.10.0
-google-auth==2.25.2
-```
+(Keep same as before - no changes needed)
 
 **Location:** `training/configs/mistral_lora_config.yaml`
 
-**Create training configuration file:**
+Update with Colab-specific paths:
 ```yaml
 # Model Configuration
 model:
@@ -53,8 +51,8 @@ model:
   
 # LoRA Configuration
 lora:
-  r: 16                          # LoRA rank
-  lora_alpha: 32                 # LoRA scaling factor
+  r: 16
+  lora_alpha: 32
   lora_dropout: 0.05
   target_modules:
     - "q_proj"
@@ -74,9 +72,9 @@ quantization:
   bnb_4bit_use_double_quant: true
   bnb_4bit_quant_type: "nf4"
 
-# Training Configuration
+# Training Configuration (optimized for Colab)
 training:
-  output_dir: "./training/models/mistral-sql-postgres"
+  output_dir: "/content/drive/MyDrive/sql-codegen-models"  # Save to Google Drive
   num_train_epochs: 3
   per_device_train_batch_size: 4
   per_device_eval_batch_size: 4
@@ -91,450 +89,307 @@ training:
   fp16: false
   bf16: true
   logging_steps: 10
-  save_strategy: "epoch"
-  evaluation_strategy: "epoch"
-  save_total_limit: 3
+  save_strategy: "steps"              # Changed to steps for Colab
+  save_steps: 500                     # Save every 500 steps
+  evaluation_strategy: "steps"        # Changed to steps
+  eval_steps: 500                     # Eval every 500 steps
+  save_total_limit: 2                 # Only keep 2 checkpoints (save space)
   load_best_model_at_end: true
   metric_for_best_model: "eval_loss"
   greater_is_better: false
-  report_to: ["tensorboard", "wandb"]
+  report_to: ["tensorboard"]          # Removed wandb for simplicity
   remove_unused_columns: false
   
-# Data Configuration
+# Data Configuration (Colab paths)
 data:
-  train_file: "data/processed/train_postgres.jsonl"
-  val_file: "data/processed/val_postgres.jsonl"
-  test_file: "data/processed/test_postgres.jsonl"
+  train_file: "/content/data/train_postgres.jsonl"
+  val_file: "/content/data/val_postgres.jsonl"
+  test_file: "/content/data/test_postgres.jsonl"
   text_column: "text"
-  max_samples_train: null      # null = use all
-  max_samples_val: null
 
 # Logging
 logging:
   project_name: "sql-codegen-slm"
-  run_name: "mistral-7b-lora-sql"
-  log_dir: "./training/logs"
-  tensorboard_dir: "./training/tensorboard"
+  run_name: "mistral-7b-lora-sql-colab"
+  log_dir: "/content/drive/MyDrive/sql-codegen-logs"
+  tensorboard_dir: "/content/drive/MyDrive/sql-codegen-tensorboard"
 ```
 
-**Location:** `training/configs/gcp_compute.yaml`
+**Location:** `training/configs/colab_setup.yaml`
 
-**Create GCP compute configuration:**
+Create Colab-specific configuration:
 ```yaml
-# GCP Compute Configuration for Training
+# Colab Pro+ Configuration
 
+subscription:
+  tier: "Colab Pro+"
+  cost_per_month: "$58.99"
+  compute_units: 600
+  gpu_priority: "High (A100 access)"
+  background_execution: true
+  max_runtime: "24 hours"
+
+# Compute estimates
 compute:
-  project_id: "YOUR_PROJECT_ID"        # Replace with your GCP project
-  zone: "us-central1-a"
-  machine_type: "n1-highmem-8"         # 8 vCPUs, 52GB RAM
-  gpu_type: "nvidia-tesla-a100"        # A100 40GB
-  gpu_count: 1
-  boot_disk_size_gb: 200
-  boot_disk_type: "pd-ssd"
-
-# Container/VM Configuration  
-vm:
-  image_project: "ml-images"
-  image_family: "common-cu121-ubuntu-2204"  # CUDA 12.1, Ubuntu 22.04
-  python_version: "3.10"
-  
-# Cost estimation (per hour)
-cost:
-  machine: "$0.47/hour"
-  gpu_a100: "$3.67/hour"
-  disk: "$0.27/hour"
-  total_estimated: "$4.41/hour"
-  
-# Training estimates
-estimates:
+  expected_gpu: "Tesla A100 (40GB)"
+  fallback_gpu: "Tesla V100 (16GB)"
   training_time_hours: 8-12
-  total_cost: "$35-53"
+  compute_units_used: "~80-120 units per run"
+  
+# Session management
+session:
+  auto_disconnect: "~12 hours idle"
+  reconnection: "Resume from checkpoint"
+  checkpoint_frequency: "Every 500 steps"
+  
+# Google Drive integration
+drive:
+  mount_path: "/content/drive"
+  model_save_path: "/content/drive/MyDrive/sql-codegen-models"
+  checkpoint_backup: true
+  
+# Data handling
+data:
+  upload_method: "Google Drive or wget"
+  size_limit: "200 GB available"
+  local_path: "/content/data"
 ```
 
-**Location:** `training/environment_setup.py`
+**Location:** `training/colab_setup.py`
 
-**Create Python module for environment validation:**
+Create Python module for Colab environment setup:
 
-Create a module that:
+1. **Main function: setup_colab_environment()**
+   - Checks if running in Colab
+   - Mounts Google Drive
+   - Creates necessary directories on Drive
+   - Clones git repository or syncs code
+   - Uploads data files from Drive or downloads from GitHub
+   - Installs required packages
+   - Verifies GPU allocation (checks for A100)
+   - Sets up tensorboard in background
+   - Returns environment status
 
-1. **Main function: validate_environment()**
-   - Checks Python version (3.10)
-   - Verifies conda environment is activated
-   - Checks CUDA availability and version
-   - Validates all required packages installed with correct versions
-   - Checks GPU memory available
-   - Verifies data files exist
-   - Prints comprehensive environment report
-   - Returns True if all checks pass, False otherwise
+2. **Helper function: mount_google_drive()**
+   - Mounts Google Drive at /content/drive
+   - Verifies mount successful
+   - Creates project directories if not exist
+   - Returns mount status
 
-2. **Helper function: check_gpu_specs()**
-   - Detects GPU type (A100, V100, T4, etc.)
-   - Checks GPU memory (should be 40GB+ for A100)
-   - Checks CUDA version (should be 11.8+)
-   - Returns GPU specifications dictionary
+3. **Helper function: check_gpu()**
+   - Detects GPU type (A100, V100, T4)
+   - Checks GPU memory
+   - Warns if got T4 instead of A100 (Colab can allocate different GPUs)
+   - Returns GPU info
 
-3. **Helper function: check_data_files()**
-   - Verifies train/val/test files exist
-   - Checks file sizes are reasonable
-   - Counts examples in each file
-   - Returns data file statistics
+4. **Helper function: upload_data_files()**
+   - Checks if data already in Drive
+   - If not, provides instructions to upload or download from GitHub Release
+   - Copies data to /content/data/ (local for faster access)
+   - Verifies all files present
+   - Returns data status
 
-4. **Helper function: estimate_memory_requirements()**
-   - Calculates expected memory usage:
-     - Base model (4-bit): ~3.5GB
-     - LoRA adapters: ~100MB
-     - Optimizer states: ~2GB
-     - Activations (batch_size=4): ~8GB
-     - Gradient accumulation overhead: ~4GB
-     - Total estimated: ~18GB
-   - Compares with available GPU memory
-   - Returns memory report with warnings if tight
+5. **Helper function: setup_checkpointing()**
+   - Creates checkpoint directory on Drive
+   - Tests write permissions
+   - Sets up auto-save every 500 steps
+   - Returns checkpoint config
 
-**Location:** `scripts/setup_training_env.sh`
+**Location:** `notebooks/train_colab.ipynb`
 
-**Create bash script:**
+Create Colab training notebook with cells:
 
-Script should:
-1. Activate conda environment
-2. Install training requirements: `pip install -r training/requirements.txt`
-3. Run environment validation: `python -m training.environment_setup`
-4. Create necessary directories (logs, models, tensorboard)
-5. Check if wandb is configured (provide setup instructions if not)
-6. Print summary and next steps
-7. Make executable
+**Cell 1: Check GPU**
+```python
+!nvidia-smi
+# Should show A100 or V100
+```
 
-**Location:** `scripts/gcp/create_training_instance.sh`
+**Cell 2: Mount Drive & Setup**
+```python
+from google.colab import drive
+drive.mount('/content/drive')
 
-**Create GCP instance creation script:**
+!git clone https://github.com/YOUR_USERNAME/sql-codegen-slm.git
+%cd sql-codegen-slm
 
-Script should:
-1. Check if gcloud CLI is installed and authenticated
-2. Read configuration from `training/configs/gcp_compute.yaml`
-3. Create GCP Compute Engine instance with:
-   - Specified machine type and GPU
-   - Deep Learning VM image (with CUDA pre-installed)
-   - Sufficient disk space
-   - Appropriate firewall rules
-4. Install Python dependencies on instance
-5. Clone git repository to instance
-6. Setup SSH access
-7. Print connection instructions
-8. Make executable
+!pip install -r training/requirements.txt
+```
 
-**Location:** `scripts/gcp/sync_data_to_gcp.sh`
+**Cell 3: Upload Data**
+```python
+# Option 1: Data already in Drive
+!cp -r /content/drive/MyDrive/sql-codegen-data/* data/processed/
 
-**Create data sync script:**
+# Option 2: Download from GitHub Release
+!wget https://github.com/YOUR_USERNAME/sql-codegen-slm/releases/download/v0.1/data.zip
+!unzip data.zip -d data/processed/
+```
 
-Script should:
-1. Check if GCP instance exists and is running
-2. Use `gcloud compute scp` to copy:
-   - Processed data files (train/val/test)
-   - Training configurations
-   - Code files
-3. Exclude raw data (too large)
-4. Show progress bar
-5. Verify files transferred successfully
-6. Make executable
+**Cell 4: Verify Environment**
+```python
+from training.colab_setup import setup_colab_environment
+setup_colab_environment()
+```
 
-**Location:** `scripts/gcp/connect_to_instance.sh`
+**Cell 5: Start Training**
+```python
+!python -m training.train --config training/configs/mistral_lora_config.yaml
+```
 
-**Create SSH connection helper:**
+**Cell 6: Monitor with TensorBoard**
+```python
+%load_ext tensorboard
+%tensorboard --logdir /content/drive/MyDrive/sql-codegen-tensorboard
+```
 
-Script should:
-1. Check instance status
-2. Start instance if stopped
-3. Open SSH connection with port forwarding for:
-   - TensorBoard (port 6006)
-   - Jupyter (port 8888, optional)
-4. Print connection details
-5. Make executable
+**Location:** `docs/training_colab_setup.md`
 
-**Location:** `scripts/gcp/stop_instance.sh`
-
-**Create instance stop script:**
-
-Script should:
-1. Check instance status
-2. Stop instance (to save costs when not training)
-3. Confirm stop
-4. Print cost saved message
-5. Make executable
-
-**Create test file:** `tests/training/test_environment_setup.py`
-
-Create pytest tests that:
-1. Test validate_environment() runs without errors
-2. Test check_gpu_specs() returns proper structure
-3. Test check_data_files() finds all required files
-4. Test memory estimation calculations
-5. Test configuration YAML files are valid
-6. Test all required packages are in requirements.txt
-7. Test GCP config has required fields
-
-**Create documentation:** `docs/training_setup.md`
+Create comprehensive Colab documentation:
 
 Document:
-- Hardware requirements (GPU, RAM, disk)
-- Installation instructions (local and GCP)
-- Configuration options explained
-- GCP setup walkthrough with screenshots/commands
-- Cost estimation and optimization tips
-- Troubleshooting common issues
+- Why Colab Pro+ for this project
+- Step-by-step setup guide with screenshots
+- How to upload data (3 methods: Drive, GitHub Release, wget)
+- GPU allocation tips (how to get A100)
+- Session management (handling disconnects)
+- Checkpoint recovery process
+- Cost breakdown and unit usage
+- Troubleshooting common Colab issues
+
+**Location:** `scripts/prepare_data_for_upload.sh`
+
+Create script to package data for upload:
+
+Script should:
+1. Compress processed data files into data.zip
+2. Check file size (should be <500MB)
+3. Generate checksum
+4. Print upload instructions (upload to Drive or GitHub Release)
+5. Make executable
+
+**Update:** `tests/training/test_environment_setup.py`
+
+Add Colab-specific tests:
+1. Test detect_colab() function
+2. Test Google Drive mount simulation
+3. Test GPU detection logic
+4. Test checkpoint path creation
+5. Test data file verification
+
+**Update:** `README.md`
+
+Replace GCP section with Colab section:
+
+```markdown
+## Training Setup (Colab Pro+)
+
+### Prerequisites
+1. Google Colab Pro+ subscription ($58.99/month)
+2. Google Drive with 10GB free space
+
+### Quick Start
+1. Open `notebooks/train_colab.ipynb` in Colab
+2. Run all cells in order
+3. Training will save to your Google Drive
+4. Estimated time: 8-12 hours
+
+### Cost
+- Subscription: $58.99/month (unlimited training runs)
+- Compute units: ~80-120 units per run (out of 600/month)
+- Can do 5-7 full training runs per month
+
+### Advantages over GCP
+- ✅ Cheaper for multiple experiments
+- ✅ No setup complexity
+- ✅ Automatic checkpoint saving to Drive
+- ✅ TensorBoard integration
+- ✅ Can pause/resume easily
+```
 
 ### Testing Requirements:
 
 After creation:
-1. Running `./scripts/setup_training_env.sh` installs all dependencies
-2. Running `python -m training.environment_setup` passes all checks
-3. All configuration YAML files are valid
-4. Running `pytest tests/training/test_environment_setup.py -v` passes
-5. GCP scripts are created and executable
-
-### Update README.md:
-
-Add "Training Setup" section:
-```markdown
-## Training Setup
-
-### Local Setup (for testing)
-```bash
-./scripts/setup_training_env.sh
-python -m training.environment_setup
-```
-
-### GCP Setup (for actual training)
-```bash
-# 1. Create training instance
-./scripts/gcp/create_training_instance.sh
-
-# 2. Sync data
-./scripts/gcp/sync_data_to_gcp.sh
-
-# 3. Connect to instance
-./scripts/gcp/connect_to_instance.sh
-
-# 4. After training, stop instance
-./scripts/gcp/stop_instance.sh
-```
-
-**Estimated cost:** $35-53 for full training run (8-12 hours)
-```
+1. Running setup cells in Colab notebook works
+2. Environment validation passes
+3. Data upload methods documented
+4. Checkpoint saving to Drive works
+5. All Colab-specific tests pass
 
 ### Commit Message:
-"feat(training): Setup training environment and GCP infrastructure - Module 2.1"
+"feat(training): Setup training environment for Colab Pro+ - Module 2.1 (Revised)"
 
 ---
 
-## ✅ MODULE 2.1 COMPLETION CHECKLIST
+## ✅ MODULE 2.1 COMPLETION CHECKLIST (Colab Version)
 
 **After running the AI IDE prompt, verify the following:**
 
 ### Files Created:
-- [ ] `training/requirements.txt` exists
-- [ ] `training/configs/mistral_lora_config.yaml` exists
-- [ ] `training/configs/gcp_compute.yaml` exists
-- [ ] `training/environment_setup.py` exists
-- [ ] `training/__init__.py` exists
-- [ ] `scripts/setup_training_env.sh` exists and is executable
-- [ ] `scripts/gcp/create_training_instance.sh` exists and is executable
-- [ ] `scripts/gcp/sync_data_to_gcp.sh` exists and is executable
-- [ ] `scripts/gcp/connect_to_instance.sh` exists and is executable
-- [ ] `scripts/gcp/stop_instance.sh` exists and is executable
-- [ ] `tests/training/test_environment_setup.py` exists
-- [ ] `tests/training/__init__.py` exists
-- [ ] `docs/training_setup.md` exists
-- [ ] README.md updated with training setup section
+- [ ] `training/requirements.txt` exists (same as before)
+- [ ] `training/configs/mistral_lora_config.yaml` updated with Colab paths
+- [ ] `training/configs/colab_setup.yaml` exists
+- [ ] `training/colab_setup.py` exists
+- [ ] `notebooks/train_colab.ipynb` exists
+- [ ] `docs/training_colab_setup.md` exists
+- [ ] `scripts/prepare_data_for_upload.sh` exists and is executable
+- [ ] README.md updated with Colab instructions
 
-### Directory Structure:
-- [ ] `training/configs/` directory created
-- [ ] `training/logs/` directory created (or will be created by script)
-- [ ] `training/models/` directory created
-- [ ] `training/tensorboard/` directory created
-- [ ] `scripts/gcp/` directory created
-
-### Requirements Validation:
-- [ ] Open `training/requirements.txt`
-- [ ] Contains torch, transformers, peft, accelerate
-- [ ] Contains bitsandbytes for 4-bit quantization
-- [ ] Contains trl for training
-- [ ] Contains wandb and tensorboard for logging
-- [ ] Contains google-cloud-storage for GCP
-- [ ] Version numbers specified
+### Colab Notebook Structure:
+- [ ] Cell 1: GPU check
+- [ ] Cell 2: Mount Drive & clone repo
+- [ ] Cell 3: Install dependencies
+- [ ] Cell 4: Upload/verify data
+- [ ] Cell 5: Environment validation
+- [ ] Cell 6: Start training
+- [ ] Cell 7: TensorBoard monitoring
+- [ ] All cells have clear markdown explanations
 
 ### Configuration Validation:
-- [ ] Open `mistral_lora_config.yaml`
-- [ ] Has model configuration (Mistral-7B)
-- [ ] Has LoRA config (r=16, alpha=32, dropout=0.05)
-- [ ] Has quantization config (4-bit settings)
-- [ ] Has training hyperparameters (epochs, batch size, learning rate)
-- [ ] Has data file paths
-- [ ] Has logging configuration
+- [ ] `mistral_lora_config.yaml` has Drive paths (/content/drive/MyDrive/...)
+- [ ] Checkpoint saving set to "steps" (not epochs) for Colab
+- [ ] save_steps: 500 (saves frequently in case of disconnect)
+- [ ] save_total_limit: 2 (saves Drive space)
 
-GCP Configuration:
-- [ ] Open `gcp_compute.yaml`
-- [ ] Has machine type (n1-highmem-8)
-- [ ] Has GPU config (A100)
-- [ ] Has disk configuration
-- [ ] Has cost estimates
-- [ ] Has training time estimates
+### Data Upload Preparation:
+- [ ] Run `./scripts/prepare_data_for_upload.sh`
+- [ ] Creates `data.zip` with train/val/test files
+- [ ] File size reasonable (<500MB)
+- [ ] Instructions printed for upload options
 
-### Local Environment Setup:
-- [ ] Run `./scripts/setup_training_env.sh`
-- [ ] Script installs dependencies without errors
-- [ ] Creates necessary directories
-- [ ] Shows completion message
+### Colab-Specific Features:
+- [ ] Google Drive mounting implemented
+- [ ] GPU detection warns if not A100
+- [ ] Checkpoint recovery documented
+- [ ] Session disconnect handling explained
+- [ ] TensorBoard background launch
 
-### Environment Validation:
-- [ ] Run `python -m training.environment_setup`
-- [ ] Checks Python version (should show 3.10)
-- [ ] Checks if conda env activated
-- [ ] Lists all required packages and versions
-- [ ] Checks for CUDA/GPU (will fail on Mac, that's okay for now)
-- [ ] Verifies data files exist
-- [ ] Shows memory estimates
-
-### GCP Scripts Validation:
-- [ ] Check `scripts/gcp/create_training_instance.sh` exists
-- [ ] Contains gcloud commands for instance creation
-- [ ] Specifies A100 GPU
-- [ ] Has error handling
-- [ ] Check `scripts/gcp/sync_data_to_gcp.sh` exists
-- [ ] Uses gcloud compute scp for file transfer
-- [ ] Check `scripts/gcp/connect_to_instance.sh` exists
-- [ ] Opens SSH with port forwarding
-- [ ] Check `scripts/gcp/stop_instance.sh` exists
-- [ ] Stops instance to save costs
-
-### Functional Tests:
-- [ ] Run `pytest tests/training/test_environment_setup.py -v`
-- [ ] All tests pass
-- [ ] Configuration YAML validation works
-- [ ] Data file checks work
-- [ ] Memory estimation calculates correctly
-
-### Documentation Check:
-- [ ] Open `docs/training_setup.md`
-- [ ] Has hardware requirements listed
-- [ ] Has installation instructions
-- [ ] Explains configuration options
-- [ ] Has GCP setup walkthrough
-- [ ] Has cost breakdown
-- [ ] Has troubleshooting section
-
-### Configuration Understanding:
-
-Check `mistral_lora_config.yaml`:
-- [ ] Understand LoRA rank (r=16): Lower = less parameters, faster but less expressive
-- [ ] Understand alpha/r ratio (32/16=2): Controls adaptation strength
-- [ ] Understand batch_size × gradient_accumulation (4×4=16 effective batch)
-- [ ] Understand learning rate (2e-4): Standard for LoRA fine-tuning
-- [ ] Understand warmup_ratio (0.03): 3% of steps for learning rate warmup
-
-### Cost Awareness:
-- [ ] GCP A100 costs ~$4.41/hour
-- [ ] Training estimate: 8-12 hours
-- [ ] Total cost estimate: $35-53
-- [ ] Stopping instance when not training saves money
-- [ ] Understand this is cheaper than Mac Studio ($3,000+)
+### Cost Understanding:
+- [ ] Colab Pro+ costs $58.99/month
+- [ ] Gets 600 compute units
+- [ ] Training uses ~80-120 units (8-12 hours)
+- [ ] Can do 5-7 training runs per month
+- [ ] Much cheaper than GCP for experimentation ($58.99 vs $200+ for 5 runs)
 
 ### Understanding Check (Learning):
-- [ ] You understand why we use 4-bit quantization (memory efficiency)
-- [ ] You know what LoRA is (Low-Rank Adaptation - efficient fine-tuning)
-- [ ] You understand gradient accumulation (simulates larger batches)
-- [ ] You know why we need A100 GPU (40GB VRAM, good for 7B model)
-- [ ] You understand the cost tradeoff (cloud vs local hardware)
+- [ ] You understand why Colab Pro+ is better for learning (fixed monthly cost)
+- [ ] You know how to handle session disconnects (checkpoints every 500 steps)
+- [ ] You understand Drive integration (models saved permanently)
+- [ ] You know Colab may give different GPUs (A100 preferred, V100 okay, T4 slower)
 
 ### Git Verification:
-- [ ] `training/logs/` NOT tracked (.gitignore)
-- [ ] `training/models/` NOT tracked (.gitignore)
-- [ ] `training/tensorboard/` NOT tracked (.gitignore)
-- [ ] Configuration files ARE tracked (YAML files)
-- [ ] Code files ARE tracked (Python, bash scripts)
-- [ ] Documentation IS tracked
+- [ ] `notebooks/` directory tracked
+- [ ] `train_colab.ipynb` is tracked
+- [ ] Documentation updated
+- [ ] No data files tracked (too large)
 - [ ] Commit message follows convention
 
-### What You Should Have Learned:
-1. **LoRA Fine-tuning**: Efficient method to adapt large models with minimal parameters
-2. **4-bit Quantization**: Reduces model memory from 14GB to 3.5GB
-3. **Training Configuration**: Hyperparameters, batch sizes, learning rates
-4. **GCP Compute**: Setting up cloud GPU instances for ML training
-5. **Cost Management**: Understanding cloud costs and optimization
-6. **Environment Validation**: Importance of checking dependencies before training
-7. **Configuration Files**: Using YAML for reproducible experiments
-
 ---
 
-**TROUBLESHOOTING (if checks fail):**
+**Key Advantages of Your Decision:**
 
-❌ **Package installation fails:**
-- Check Python version is 3.10
-- Try updating pip: `pip install --upgrade pip`
-- Install packages one by one to identify issue
-- Check CUDA version if GPU-related packages fail
-
-❌ **YAML syntax errors:**
-- Validate YAML with: `python -c "import yaml; yaml.safe_load(open('file.yaml'))"`
-- Check indentation (use spaces, not tabs)
-- Check quotes around special characters
-
-❌ **Environment validation fails:**
-- If CUDA check fails on Mac: Expected, skip for now
-- If data files not found: Check paths in config match actual locations
-- If memory estimates wrong: Review calculation logic
-
-❌ **GCP scripts fail:**
-- Check gcloud CLI installed: `gcloud --version`
-- Authenticate: `gcloud auth login`
-- Set project: `gcloud config set project YOUR_PROJECT_ID`
-- Check quotas: Some regions have limited A100 availability
-
----
-
-**SAMPLE OUTPUT YOU SHOULD SEE:**
-
-When running `./scripts/setup_training_env.sh`:
-```
-Setting up training environment...
-
-Installing training dependencies...
-✅ torch==2.1.2 installed
-✅ transformers==4.36.2 installed
-✅ peft==0.7.1 installed
-✅ accelerate==0.25.0 installed
-✅ bitsandbytes==0.41.3 installed
-✅ trl==0.7.10 installed
-... [more packages]
-
-Creating directories...
-✅ training/logs/
-✅ training/models/
-✅ training/tensorboard/
-
-Validating environment...
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Python version: 3.10.13 ✅
-Conda environment: sql-codegen ✅
-CUDA available: No (Mac) ⚠️
-Data files: All present ✅
-
-Required packages:
-✅ torch 2.1.2
-✅ transformers 4.36.2
-✅ peft 0.7.1
-[... more packages]
-
-Memory Estimates (for GCP A100):
-Base model (4-bit): 3.5 GB
-LoRA adapters: 0.1 GB
-Optimizer states: 2.0 GB
-Activations: 8.0 GB
-Total estimated: ~18 GB / 40 GB available ✅
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Environment setup complete!
-
-Next steps:
-1. Review training configuration: training/configs/mistral_lora_config.yaml
-2. Setup GCP instance: ./scripts/gcp/create_training_instance.sh
-3. Or proceed with local testing (limited without GPU)
-```
+1. **Cost:** $58.99/month vs $35-53 per run on GCP
+2. **Simplicity:** No GCP setup, no billing surprises
+3. **Learning-friendly:** Can experiment freely within monthly budget
+4. **Background execution:** Colab Pro+ keeps running when you close browser
+5. **Drive integration:** Models auto-saved, no manual download needed

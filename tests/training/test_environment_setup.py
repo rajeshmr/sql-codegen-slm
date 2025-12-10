@@ -233,47 +233,115 @@ class TestTrainingConfig:
         assert "train_file" in config["data"]
 
 
-class TestGCPConfig:
-    """Tests for GCP configuration."""
+class TestColabConfig:
+    """Tests for Colab configuration."""
     
-    def test_gcp_config_file_exists(self):
-        """Test that GCP config file exists."""
-        config_path = CONFIG_DIR / "gcp_compute.yaml"
-        assert config_path.exists(), "GCP config file not found"
+    def test_colab_config_file_exists(self):
+        """Test that Colab config file exists."""
+        config_path = CONFIG_DIR / "colab_setup.yaml"
+        assert config_path.exists(), "Colab config file not found"
     
-    def test_gcp_config_valid_yaml(self):
-        """Test that GCP config is valid YAML."""
-        config_path = CONFIG_DIR / "gcp_compute.yaml"
+    def test_colab_config_valid_yaml(self):
+        """Test that Colab config is valid YAML."""
+        config_path = CONFIG_DIR / "colab_setup.yaml"
         if not config_path.exists():
-            pytest.skip("GCP config file not found")
+            pytest.skip("Colab config file not found")
         
         with open(config_path, "r") as f:
             config = yaml.safe_load(f)
         assert isinstance(config, dict)
     
-    def test_gcp_config_has_compute_section(self):
-        """Test GCP config has compute section."""
-        config_path = CONFIG_DIR / "gcp_compute.yaml"
+    def test_colab_config_has_subscription_section(self):
+        """Test Colab config has subscription section."""
+        config_path = CONFIG_DIR / "colab_setup.yaml"
         if not config_path.exists():
-            pytest.skip("GCP config file not found")
+            pytest.skip("Colab config file not found")
         
         with open(config_path, "r") as f:
             config = yaml.safe_load(f)
         
-        assert "compute" in config
-        assert "machine_type" in config["compute"]
-        assert "gpu_type" in config["compute"]
+        assert "subscription" in config
+        assert "tier" in config["subscription"]
     
-    def test_gcp_config_has_cost_section(self):
-        """Test GCP config has cost estimates."""
-        config_path = CONFIG_DIR / "gcp_compute.yaml"
+    def test_colab_config_has_gcs_section(self):
+        """Test Colab config has GCS integration section."""
+        config_path = CONFIG_DIR / "colab_setup.yaml"
         if not config_path.exists():
-            pytest.skip("GCP config file not found")
+            pytest.skip("Colab config file not found")
         
         with open(config_path, "r") as f:
             config = yaml.safe_load(f)
         
-        assert "cost" in config
+        assert "gcs" in config
+        assert "bucket_name" in config["gcs"]
+
+
+class TestColabSetup:
+    """Tests for Colab setup module."""
+    
+    def test_colab_setup_module_exists(self):
+        """Test that colab_setup module exists."""
+        from training import colab_setup
+        assert colab_setup is not None
+    
+    def test_is_colab_function(self):
+        """Test is_colab function."""
+        from training.colab_setup import is_colab
+        result = is_colab()
+        assert isinstance(result, bool)
+        # Should be False when not in Colab
+        assert result is False
+    
+    def test_check_gpu_function(self):
+        """Test check_gpu function returns dict."""
+        from training.colab_setup import check_gpu
+        result = check_gpu()
+        assert isinstance(result, dict)
+        assert "available" in result
+        assert "name" in result
+    
+    def test_estimate_training_time(self):
+        """Test training time estimation."""
+        from training.colab_setup import estimate_training_time
+        result = estimate_training_time(num_examples=1000, epochs=1)
+        assert isinstance(result, dict)
+        assert "total_steps" in result
+        assert "a100" in result
+
+
+class TestColabNotebook:
+    """Tests for Colab notebook."""
+    
+    def test_notebook_exists(self):
+        """Test that training notebook exists."""
+        notebook_path = PROJECT_DIR / "notebooks" / "train_colab.ipynb"
+        assert notebook_path.exists(), "Colab notebook not found"
+    
+    def test_notebook_valid_json(self):
+        """Test that notebook is valid JSON."""
+        import json
+        notebook_path = PROJECT_DIR / "notebooks" / "train_colab.ipynb"
+        if not notebook_path.exists():
+            pytest.skip("Notebook not found")
+        
+        with open(notebook_path, "r") as f:
+            notebook = json.load(f)
+        
+        assert "cells" in notebook
+        assert "nbformat" in notebook
+    
+    def test_notebook_has_cells(self):
+        """Test that notebook has expected cells."""
+        import json
+        notebook_path = PROJECT_DIR / "notebooks" / "train_colab.ipynb"
+        if not notebook_path.exists():
+            pytest.skip("Notebook not found")
+        
+        with open(notebook_path, "r") as f:
+            notebook = json.load(f)
+        
+        # Should have multiple cells
+        assert len(notebook["cells"]) >= 5
 
 
 class TestRequirementsFile:

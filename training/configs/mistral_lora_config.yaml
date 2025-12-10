@@ -1,5 +1,6 @@
 # Mistral-7B LoRA Fine-tuning Configuration
 # SQL Code Generation for PostgreSQL
+# Optimized for Google Colab Pro+
 
 # Model Configuration
 model:
@@ -30,9 +31,9 @@ quantization:
   bnb_4bit_use_double_quant: true
   bnb_4bit_quant_type: "nf4"     # NormalFloat4 - best for LLMs
 
-# Training Configuration
+# Training Configuration (optimized for Colab)
 training:
-  output_dir: "./training/models/mistral-sql-postgres"
+  output_dir: "/content/models"  # Local during training, sync to GCS after
   num_train_epochs: 3
   per_device_train_batch_size: 4
   per_device_eval_batch_size: 4
@@ -47,27 +48,27 @@ training:
   fp16: false
   bf16: true                      # Better precision than fp16
   logging_steps: 10
-  save_strategy: "epoch"
-  evaluation_strategy: "epoch"
-  save_total_limit: 3             # Keep only 3 best checkpoints
+  save_strategy: "steps"          # Changed to steps for Colab (handle disconnects)
+  save_steps: 500                 # Save every 500 steps
+  evaluation_strategy: "steps"    # Changed to steps
+  eval_steps: 500                 # Eval every 500 steps
+  save_total_limit: 2             # Only keep 2 checkpoints (save Drive space)
   load_best_model_at_end: true
   metric_for_best_model: "eval_loss"
   greater_is_better: false
-  report_to: ["tensorboard", "wandb"]
+  report_to: ["tensorboard"]      # Removed wandb for simplicity
   remove_unused_columns: false
 
-# Data Configuration
+# Data Configuration (Colab paths)
 data:
-  train_file: "data/processed/train_postgres.jsonl"
-  val_file: "data/processed/val_postgres.jsonl"
-  test_file: "data/processed/test_postgres.jsonl"
+  train_file: "/content/data/train_postgres.jsonl"
+  val_file: "/content/data/val_postgres.jsonl"
+  test_file: "/content/data/test_postgres.jsonl"
   text_column: "text"
-  max_samples_train: null         # null = use all samples
-  max_samples_val: null
 
 # Logging Configuration
 logging:
   project_name: "sql-codegen-slm"
-  run_name: "mistral-7b-lora-sql"
-  log_dir: "./training/logs"
-  tensorboard_dir: "./training/tensorboard"
+  run_name: "mistral-7b-lora-sql-colab"
+  log_dir: "/content/logs"
+  tensorboard_dir: "/content/tensorboard"

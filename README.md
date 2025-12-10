@@ -199,37 +199,47 @@ Five polished demo schemas for the web UI:
 
 Each schema includes 10 sample questions ranging from simple to complex queries.
 
-## Training Setup
+## Training Setup (Colab Pro+ with GCS)
 
-### Local Setup (for testing)
+### Prerequisites
 
-```bash
-./scripts/setup_training_env.sh
-python -m training.environment_setup
-```
+1. Google Colab Pro+ subscription ($58.99/month)
+2. GCP Project with Cloud Storage enabled
+3. Google Cloud SDK installed locally
 
-### GCP Setup (for actual training)
+### Quick Start
 
-```bash
-# 1. Set your GCP project ID
-export GCP_PROJECT_ID=your-project-id
+1. Upload data to Google Cloud Storage:
+   ```bash
+   export GCS_BUCKET=your-bucket-name
+   ./scripts/prepare_data_for_upload.sh
+   ```
 
-# 2. Create training instance
-./scripts/gcp/create_training_instance.sh
+2. Open `notebooks/train_colab.ipynb` in Colab
 
-# 3. Sync data
-./scripts/gcp/sync_data_to_gcp.sh
+3. Set your `PROJECT_ID` and `BUCKET_NAME` in the notebook
 
-# 4. Connect to instance
-./scripts/gcp/connect_to_instance.sh
+4. Run all cells in order
 
-# 5. After training, stop instance
-./scripts/gcp/stop_instance.sh
-```
+**Estimated time:** 8-12 hours on A100
 
-**Estimated cost:** $35-53 for full training run (8-12 hours on A100)
+### Cost Comparison
 
-See [docs/training_setup.md](docs/training_setup.md) for detailed instructions.
+| Scenario | GCP VM | Colab Pro+ |
+|----------|--------|------------|
+| 1 run | $35-53 | $58.99/month |
+| 5 runs | $175-265 | $58.99/month |
+| Storage | ~$5/month | ~$0.20/month (GCS) |
+
+### Advantages
+
+- ✅ Cheaper for multiple experiments
+- ✅ Fast data transfer with GCS
+- ✅ Reliable checkpoint syncing
+- ✅ TensorBoard integration
+- ✅ Background execution (Pro+)
+
+See [docs/training_colab_setup.md](docs/training_colab_setup.md) for detailed instructions.
 
 ## License
 

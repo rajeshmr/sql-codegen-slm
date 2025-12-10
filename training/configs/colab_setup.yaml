@@ -1,0 +1,62 @@
+# Colab Pro+ Configuration
+# SQL Codegen SLM Training Environment
+
+subscription:
+  tier: "Colab Pro+"
+  cost_per_month: "$58.99"
+  compute_units: 600
+  gpu_priority: "High (A100 access)"
+  background_execution: true
+  max_runtime: "24 hours"
+
+# Compute estimates
+compute:
+  expected_gpu: "Tesla A100 (40GB)"
+  fallback_gpu: "Tesla V100 (16GB)"
+  training_time_hours: "8-12"
+  compute_units_used: "~80-120 units per run"
+  runs_per_month: "5-7 full training runs"
+
+# Session management
+session:
+  auto_disconnect: "~12 hours idle"
+  reconnection: "Resume from checkpoint"
+  checkpoint_frequency: "Every 500 steps"
+  max_session_length: "24 hours"
+
+# Google Cloud Storage integration (faster than Drive)
+gcs:
+  project_id: "YOUR_PROJECT_ID"  # Replace with your GCP project
+  bucket_name: "sql-codegen-slm-data"  # Your bucket name
+  data_prefix: "data/"
+  models_prefix: "models/"
+  logs_prefix: "logs/"
+  
+# Local paths in Colab
+paths:
+  local_data: "/content/data"
+  local_models: "/content/models"
+  local_logs: "/content/logs"
+  tensorboard: "/content/tensorboard"
+
+# Data handling
+data:
+  upload_method: "Google Cloud Storage (gsutil)"
+  required_files:
+    - "train_postgres.jsonl"
+    - "val_postgres.jsonl"
+    - "test_postgres.jsonl"
+
+# Cost comparison
+cost_comparison:
+  colab_pro_plus:
+    monthly: "$58.99"
+    per_run: "Included"
+    five_runs: "$58.99"
+  gcp_a100:
+    monthly: "Pay per use"
+    per_run: "$35-53"
+    five_runs: "$175-265"
+  gcs_storage:
+    monthly: "~$0.02/GB (negligible for our data)"
+  savings: "$116-206 for 5 runs"
