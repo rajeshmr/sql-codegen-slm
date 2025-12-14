@@ -1,0 +1,842 @@
+Wed Dec 10 17:02:29 2025       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 550.54.15              Driver Version: 550.54.15      CUDA Version: 12.4     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-SXM4-40GB          Off |   00000000:00:04.0 Off |                    0 |
+| N/A   32C    P0             45W /  400W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+PyTorch: 2.9.0+cu126
+CUDA available: True
+GPU: NVIDIA A100-SXM4-40GB
+Memory: 42.5 GB
+
+✅ A100 detected - optimal for training
+
+============================================================
+TRAINING CONFIGURATION
+============================================================
+Project ID: <redacted>
+GCS Bucket: sql-codegen-slm-data
+Output: gs://sql-codegen-slm-data/models/mistral-sql-final
+
+Start time: 2025-12-10 17:02
+Estimated completion: 2025-12-11 03:02 (~10h)
+============================================================
+
+Cloning into 'sql-codegen-slm'...
+remote: Enumerating objects: 257, done.
+remote: Counting objects: 100% (257/257), done.
+remote: Compressing objects: 100% (98/98), done.
+remote: Total 257 (delta 150), reused 253 (delta 146), pack-reused 0 (from 0)
+Receiving objects: 100% (257/257), 278.68 KiB | 23.22 MiB/s, done.
+Resolving deltas: 100% (150/150), done.
+✅ Repository cloned
+/content/sql-codegen-slm
+Already up to date.
+
+✅ Working directory: /content/sql-codegen-slm
+
+  Preparing metadata (setup.py) ... done
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.4/59.4 MB 43.2 MB/s eta 0:00:00
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 517.2/517.2 kB 41.0 MB/s eta 0:00:00
+  Building wheel for rouge-score (setup.py) ... done
+transformers: 4.57.3
+peft: 0.18.0
+bitsandbytes: 0.48.2
+
+✅ Dependencies installed
+
+Downloading training data...
+Copying gs://sql-codegen-slm-data/data/train_postgres.jsonl...
+==> NOTE: You are downloading one or more large file(s), which would
+run significantly faster if you enabled sliced object downloads. This
+feature is enabled by default but requires that compiled crcmod be
+installed (see "gsutil help crcmod").
+
+| [1/1 files][  9.5 GiB/  9.5 GiB] 100% Done  22.3 MiB/s ETA 00:00:00           
+Operation completed over 1 objects/9.5 GiB.                                      
+Copying gs://sql-codegen-slm-data/data/val_postgres.jsonl...
+| [1/1 files][  3.4 MiB/  3.4 MiB] 100% Done                                    
+Operation completed over 1 objects/3.4 MiB.                                      
+\nDataset sizes:
+       6016 /content/data/train_postgres.jsonl
+        332 /content/data/val_postgres.jsonl
+       6348 total
+
+✅ Data downloaded
+
+
+============================================================
+FULL TRAINING CONFIGURATION
+============================================================
+Model: mistralai/Mistral-7B-v0.1
+LoRA rank: 16
+LoRA modules: 7 (all projections)
+Epochs: 3
+Batch size: 4
+Gradient accumulation: 4
+Effective batch size: 16
+Learning rate: 0.0002
+Checkpoint every: 500 steps
+
+Config saved: /content/full_training_config.yaml
+============================================================
+
+
+============================================================
+PRE-FLIGHT CHECKS
+============================================================
+✅ GPU available: NVIDIA A100-SXM4-40GB (42GB)
+✅ Training data: 6016 train, 332 val examples
+✅ Config file ready
+✅ Disk space: 188GB free
+✅ GPU memory clear: 0.00GB allocated
+✅ GCS bucket accessible
+============================================================
+🚀 ALL CHECKS PASSED - READY FOR TRAINING
+============================================================
+
+============================================================
+🚀 STARTING FULL PRODUCTION TRAINING
+============================================================
+Start time: 2025-12-10 17:11:26
+Estimated completion: ~8-12 hours
+Output: gs://sql-codegen-slm-data/models/mistral-sql-final
+============================================================
+
+2025-12-10 17:11:30.698485: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:467] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+E0000 00:00:1765386690.719810    5725 cuda_dnn.cc:8579] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered
+E0000 00:00:1765386690.726227    5725 cuda_blas.cc:1407] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered
+W0000 00:00:1765386690.741977    5725 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1765386690.742013    5725 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1765386690.742017    5725 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+W0000 00:00:1765386690.742021    5725 computation_placer.cc:177] computation placer already registered. Please check linkage and avoid linking the same target more than once.
+tokenizer_config.json: 100% 996/996 [00:00<00:00, 8.31MB/s]
+tokenizer.model: 100% 493k/493k [00:01<00:00, 420kB/s]
+tokenizer.json: 1.80MB [00:00, 139MB/s]
+special_tokens_map.json: 100% 414/414 [00:00<00:00, 4.46MB/s]
+config.json: 100% 571/571 [00:00<00:00, 5.22MB/s]
+`torch_dtype` is deprecated! Use `dtype` instead!
+model.safetensors.index.json: 25.1kB [00:00, 9.40MB/s]
+Fetching 2 files:   0% 0/2 [00:00<?, ?it/s]
+model-00001-of-00002.safetensors:   0% 0.00/9.94G [00:00<?, ?B/s]
+
+model-00002-of-00002.safetensors:   0% 0.00/4.54G [00:00<?, ?B/s]
+model-00001-of-00002.safetensors:   0% 43.1k/9.94G [00:01<110:29:43, 25.0kB/s]
+
+model-00002-of-00002.safetensors:   0% 203k/4.54G [00:01<11:24:37, 111kB/s]
+model-00001-of-00002.safetensors:   2% 211M/9.94G [00:02<01:30, 108MB/s]      
+model-00001-of-00002.safetensors:  10% 959M/9.94G [00:02<00:14, 600MB/s]
+
+model-00002-of-00002.safetensors:   0% 7.40M/4.54G [00:02<20:39, 3.66MB/s] 
+model-00001-of-00002.safetensors:  13% 1.25G/9.94G [00:03<00:15, 576MB/s]
+
+model-00002-of-00002.safetensors:   1% 65.4M/4.54G [00:03<02:19, 32.1MB/s]
+
+model-00002-of-00002.safetensors:   2% 108M/4.54G [00:03<01:15, 58.3MB/s] 
+model-00001-of-00002.safetensors:  15% 1.45G/9.94G [00:03<00:13, 628MB/s]
+
+model-00002-of-00002.safetensors:   5% 228M/4.54G [00:03<00:32, 133MB/s] 
+model-00001-of-00002.safetensors:  17% 1.65G/9.94G [00:03<00:14, 555MB/s]
+
+model-00002-of-00002.safetensors:   6% 295M/4.54G [00:04<00:31, 136MB/s]
+
+model-00002-of-00002.safetensors:   8% 362M/4.54G [00:04<00:23, 179MB/s]
+model-00001-of-00002.safetensors:  18% 1.78G/9.94G [00:04<00:16, 487MB/s]
+model-00001-of-00002.safetensors:  19% 1.91G/9.94G [00:06<00:44, 182MB/s]
+model-00001-of-00002.safetensors:  21% 2.04G/9.94G [00:07<00:47, 167MB/s]
+
+model-00002-of-00002.safetensors:   9% 429M/4.54G [00:07<01:29, 45.8MB/s]
+
+model-00002-of-00002.safetensors:  12% 555M/4.54G [00:08<00:51, 77.9MB/s]
+model-00001-of-00002.safetensors:  28% 2.76G/9.94G [00:08<00:19, 363MB/s]
+model-00001-of-00002.safetensors:  28% 2.82G/9.94G [00:08<00:19, 367MB/s]
+
+model-00002-of-00002.safetensors:  15% 689M/4.54G [00:10<00:57, 66.9MB/s]
+model-00001-of-00002.safetensors:  29% 2.89G/9.94G [00:10<00:41, 171MB/s]
+
+model-00002-of-00002.safetensors:  18% 823M/4.54G [00:10<00:36, 103MB/s] 
+
+model-00002-of-00002.safetensors:  22% 1.01G/4.54G [00:10<00:21, 166MB/s]
+model-00001-of-00002.safetensors:  31% 3.09G/9.94G [00:11<00:31, 217MB/s]
+
+model-00002-of-00002.safetensors:  27% 1.21G/4.54G [00:11<00:12, 257MB/s]
+
+model-00002-of-00002.safetensors:  30% 1.34G/4.54G [00:11<00:09, 328MB/s]
+model-00001-of-00002.safetensors:  32% 3.23G/9.94G [00:11<00:29, 227MB/s]
+
+model-00002-of-00002.safetensors:  33% 1.50G/4.54G [00:11<00:09, 324MB/s]
+model-00001-of-00002.safetensors:  33% 3.29G/9.94G [00:11<00:29, 228MB/s]
+model-00001-of-00002.safetensors:  34% 3.36G/9.94G [00:12<00:29, 221MB/s]
+
+model-00002-of-00002.safetensors:  36% 1.63G/4.54G [00:12<00:10, 279MB/s]
+model-00001-of-00002.safetensors:  34% 3.42G/9.94G [00:12<00:30, 212MB/s]
+
+model-00002-of-00002.safetensors:  37% 1.70G/4.54G [00:12<00:11, 255MB/s]
+model-00001-of-00002.safetensors:  35% 3.49G/9.94G [00:14<01:11, 90.1MB/s]
+
+model-00002-of-00002.safetensors:  39% 1.78G/4.54G [00:14<00:24, 113MB/s]
+model-00001-of-00002.safetensors:  37% 3.69G/9.94G [00:14<00:37, 166MB/s] 
+
+model-00002-of-00002.safetensors:  42% 1.91G/4.54G [00:15<00:16, 158MB/s]
+
+model-00002-of-00002.safetensors:  44% 1.98G/4.54G [00:15<00:14, 181MB/s]
+
+model-00002-of-00002.safetensors:  47% 2.12G/4.54G [00:15<00:09, 255MB/s]
+model-00001-of-00002.safetensors:  38% 3.83G/9.94G [00:15<00:32, 188MB/s]
+
+model-00002-of-00002.safetensors:  49% 2.22G/4.54G [00:15<00:10, 219MB/s]
+model-00001-of-00002.safetensors:  40% 3.96G/9.94G [00:15<00:29, 205MB/s]
+
+model-00002-of-00002.safetensors:  52% 2.35G/4.54G [00:16<00:08, 256MB/s]
+model-00001-of-00002.safetensors:  41% 4.05G/9.94G [00:16<00:28, 210MB/s]
+
+model-00002-of-00002.safetensors:  55% 2.48G/4.54G [00:16<00:07, 288MB/s]
+model-00001-of-00002.safetensors:  41% 4.12G/9.94G [00:16<00:28, 204MB/s]
+model-00001-of-00002.safetensors:  42% 4.18G/9.94G [00:19<01:05, 88.4MB/s]
+
+model-00002-of-00002.safetensors:  56% 2.55G/4.54G [00:19<00:19, 103MB/s]
+model-00001-of-00002.safetensors:  44% 4.39G/9.94G [00:19<00:34, 161MB/s] 
+
+model-00002-of-00002.safetensors:  61% 2.75G/4.54G [00:19<00:10, 176MB/s]
+model-00001-of-00002.safetensors:  45% 4.52G/9.94G [00:19<00:25, 217MB/s]
+
+model-00002-of-00002.safetensors:  64% 2.89G/4.54G [00:19<00:07, 234MB/s]
+
+model-00002-of-00002.safetensors:  67% 3.02G/4.54G [00:19<00:05, 268MB/s]
+
+model-00002-of-00002.safetensors:  69% 3.15G/4.54G [00:19<00:04, 333MB/s]
+model-00001-of-00002.safetensors:  47% 4.65G/9.94G [00:19<00:23, 227MB/s]
+model-00001-of-00002.safetensors:  48% 4.76G/9.94G [00:20<00:22, 233MB/s]
+
+model-00002-of-00002.safetensors:  71% 3.22G/4.54G [00:24<00:18, 70.5MB/s]
+model-00001-of-00002.safetensors:  49% 4.82G/9.94G [00:24<01:17, 66.5MB/s]
+
+model-00002-of-00002.safetensors:  75% 3.42G/4.54G [00:24<00:09, 119MB/s] 
+model-00001-of-00002.safetensors:  50% 4.96G/9.94G [00:24<00:50, 99.4MB/s]
+
+model-00002-of-00002.safetensors:  78% 3.56G/4.54G [00:24<00:06, 161MB/s]
+model-00001-of-00002.safetensors:  51% 5.03G/9.94G [00:24<00:41, 119MB/s] 
+
+model-00002-of-00002.safetensors:  81% 3.69G/4.54G [00:24<00:03, 217MB/s]
+
+model-00002-of-00002.safetensors:  84% 3.83G/4.54G [00:24<00:02, 279MB/s]
+
+model-00002-of-00002.safetensors:  87% 3.96G/4.54G [00:25<00:01, 326MB/s]
+model-00001-of-00002.safetensors:  51% 5.10G/9.94G [00:25<00:41, 116MB/s]
+model-00001-of-00002.safetensors:  54% 5.41G/9.94G [00:25<00:16, 274MB/s]
+
+model-00002-of-00002.safetensors:  90% 4.09G/4.54G [00:25<00:01, 306MB/s]
+model-00001-of-00002.safetensors:  56% 5.55G/9.94G [00:25<00:14, 306MB/s]
+model-00001-of-00002.safetensors:  57% 5.65G/9.94G [00:25<00:12, 347MB/s]
+
+model-00002-of-00002.safetensors:  92% 4.16G/4.54G [00:25<00:01, 302MB/s]
+
+model-00002-of-00002.safetensors:  93% 4.23G/4.54G [00:26<00:01, 188MB/s]
+model-00001-of-00002.safetensors:  58% 5.79G/9.94G [00:26<00:18, 231MB/s]
+
+model-00002-of-00002.safetensors:  94% 4.28G/4.54G [00:26<00:01, 202MB/s]
+model-00001-of-00002.safetensors:  59% 5.85G/9.94G [00:27<00:16, 242MB/s]
+
+model-00002-of-00002.safetensors:  96% 4.34G/4.54G [00:27<00:00, 222MB/s]
+model-00001-of-00002.safetensors:  60% 5.92G/9.94G [00:27<00:15, 255MB/s]
+
+model-00002-of-00002.safetensors:  99% 4.47G/4.54G [00:27<00:00, 254MB/s]
+model-00001-of-00002.safetensors:  60% 5.99G/9.94G [00:27<00:14, 265MB/s]
+model-00001-of-00002.safetensors:  61% 6.06G/9.94G [00:27<00:14, 275MB/s]
+model-00001-of-00002.safetensors:  62% 6.12G/9.94G [00:30<00:50, 76.2MB/s]
+
+model-00002-of-00002.safetensors: 100% 4.54G/4.54G [00:30<00:00, 149MB/s] 
+
+model-00001-of-00002.safetensors:  64% 6.32G/9.94G [00:30<00:23, 151MB/s] 
+model-00001-of-00002.safetensors:  65% 6.48G/9.94G [00:30<00:15, 219MB/s]
+model-00001-of-00002.safetensors:  66% 6.61G/9.94G [00:30<00:11, 297MB/s]
+model-00001-of-00002.safetensors:  68% 6.75G/9.94G [00:30<00:08, 388MB/s]
+model-00001-of-00002.safetensors:  69% 6.89G/9.94G [00:31<00:06, 495MB/s]
+model-00001-of-00002.safetensors:  71% 7.03G/9.94G [00:31<00:05, 520MB/s]
+model-00001-of-00002.safetensors:  73% 7.30G/9.94G [00:31<00:03, 789MB/s]
+model-00001-of-00002.safetensors:  75% 7.43G/9.94G [00:31<00:02, 843MB/s]
+model-00001-of-00002.safetensors:  77% 7.61G/9.94G [00:32<00:03, 596MB/s]
+model-00001-of-00002.safetensors:  78% 7.76G/9.94G [00:32<00:04, 511MB/s]
+model-00001-of-00002.safetensors:  79% 7.90G/9.94G [00:34<00:11, 173MB/s]
+model-00001-of-00002.safetensors:  81% 8.03G/9.94G [00:34<00:08, 225MB/s]
+model-00001-of-00002.safetensors:  82% 8.17G/9.94G [00:34<00:06, 290MB/s]
+model-00001-of-00002.safetensors:  83% 8.30G/9.94G [00:35<00:04, 369MB/s]
+model-00001-of-00002.safetensors:  85% 8.43G/9.94G [00:35<00:03, 456MB/s]
+model-00001-of-00002.safetensors:  87% 8.60G/9.94G [00:35<00:02, 585MB/s]
+model-00001-of-00002.safetensors:  88% 8.74G/9.94G [00:35<00:01, 691MB/s]
+model-00001-of-00002.safetensors:  89% 8.87G/9.94G [00:35<00:01, 769MB/s]
+model-00001-of-00002.safetensors:  91% 9.00G/9.94G [00:35<00:01, 766MB/s]
+model-00001-of-00002.safetensors:  92% 9.14G/9.94G [00:36<00:01, 588MB/s]
+model-00001-of-00002.safetensors:  93% 9.27G/9.94G [00:36<00:01, 512MB/s]
+model-00001-of-00002.safetensors:  95% 9.41G/9.94G [00:36<00:01, 448MB/s]
+model-00001-of-00002.safetensors:  95% 9.47G/9.94G [00:36<00:01, 453MB/s]
+model-00001-of-00002.safetensors:  96% 9.54G/9.94G [00:37<00:00, 437MB/s]
+model-00001-of-00002.safetensors:  97% 9.61G/9.94G [00:37<00:00, 420MB/s]
+model-00001-of-00002.safetensors:  97% 9.67G/9.94G [00:37<00:00, 416MB/s]
+model-00001-of-00002.safetensors:  98% 9.74G/9.94G [00:37<00:00, 408MB/s]
+model-00001-of-00002.safetensors:  99% 9.81G/9.94G [00:37<00:00, 399MB/s]
+model-00001-of-00002.safetensors:  99% 9.88G/9.94G [00:38<00:00, 393MB/s]
+model-00001-of-00002.safetensors: 100% 9.94G/9.94G [00:38<00:00, 260MB/s]
+Fetching 2 files: 100% 2/2 [00:38<00:00, 19.33s/it]
+Loading checkpoint shards: 100% 2/2 [00:16<00:00,  8.34s/it]
+generation_config.json: 100% 116/116 [00:00<00:00, 1.15MB/s]
+
+==================================================
+Model Parameters Summary
+==================================================
+Total parameters:     3,794,014,208
+Trainable parameters: 41,943,040
+Trainable %:          1.11%
+==================================================
+
+/content/sql-codegen-slm/training/train.py:243: FutureWarning: `tokenizer` is deprecated and will be removed in version 5.0.0 for `Trainer.__init__`. Use `processing_class` instead.
+  trainer = Trainer(
+The tokenizer has new PAD/BOS/EOS tokens that differ from the model config and generation config. The model config and generation config were aligned accordingly, being updated with the tokenizer's values. Updated tokens: {'pad_token_id': 2}.
+
+============================================================
+🚀 TRAINING STARTED
+============================================================
+Total steps: 1128
+Epochs: 3
+Batch size: 4
+Gradient accumulation: 4
+Effective batch size: 16
+Learning rate: 0.0002
+Start time: 2025-12-10 17:13:51
+============================================================
+
+  0% 0/1128 [00:00<?, ?it/s]`use_cache=True` is incompatible with gradient checkpointing. Setting `use_cache=False`.
+{'loss': 0.7263, 'grad_norm': 0.39795467257499695, 'learning_rate': 5.294117647058824e-05, 'epoch': 0.03}
+{'loss': 0.6348, 'grad_norm': 0.35155320167541504, 'learning_rate': 0.00011176470588235294, 'epoch': 0.05}
+{'loss': 0.5209, 'grad_norm': 0.4746909439563751, 'learning_rate': 0.00017058823529411766, 'epoch': 0.08}
+{'loss': 0.3887, 'grad_norm': 0.8164198398590088, 'learning_rate': 0.00019998969216036892, 'epoch': 0.11}
+{'loss': 0.3433, 'grad_norm': 0.7094138860702515, 'learning_rate': 0.00019990724219306902, 'epoch': 0.13}
+{'loss': 0.2195, 'grad_norm': 0.6651203632354736, 'learning_rate': 0.00019974241024544828, 'epoch': 0.16}
+{'loss': 0.2047, 'grad_norm': 0.5947861075401306, 'learning_rate': 0.00019949533223540385, 'epoch': 0.19}
+{'loss': 0.1377, 'grad_norm': 0.6591498255729675, 'learning_rate': 0.00019916621189967502, 'epoch': 0.21}
+{'loss': 0.128, 'grad_norm': 0.49359792470932007, 'learning_rate': 0.00019875532062584519, 'epoch': 0.24}
+{'loss': 0.1129, 'grad_norm': 0.5443029403686523, 'learning_rate': 0.00019826299722855976, 'epoch': 0.27}
+{'loss': 0.0713, 'grad_norm': 0.9017789363861084, 'learning_rate': 0.00019768964767014475, 'epoch': 0.29}
+{'loss': 0.071, 'grad_norm': 0.5008975267410278, 'learning_rate': 0.00019703574472585648, 'epoch': 0.32}
+{'loss': 0.0665, 'grad_norm': 0.48519167304039, 'learning_rate': 0.0001963018275940384, 'epoch': 0.35}
+{'loss': 0.0439, 'grad_norm': 0.515729546546936, 'learning_rate': 0.00019548850145150633, 'epoch': 0.37}
+{'loss': 0.0451, 'grad_norm': 0.7248003482818604, 'learning_rate': 0.00019459643695452904, 'epoch': 0.4}
+{'loss': 0.0432, 'grad_norm': 0.33276665210723877, 'learning_rate': 0.00019362636968581524, 'epoch': 0.43}
+{'loss': 0.0325, 'grad_norm': 0.45314887166023254, 'learning_rate': 0.0001925790995479635, 'epoch': 0.45}
+{'loss': 0.0286, 'grad_norm': 0.27977246046066284, 'learning_rate': 0.00019145549010387463, 'epoch': 0.48}
+{'loss': 0.0342, 'grad_norm': 0.80498868227005, 'learning_rate': 0.00019025646786467116, 'epoch': 0.51}
+{'loss': 0.0272, 'grad_norm': 0.6693511605262756, 'learning_rate': 0.00018898302152571043, 'epoch': 0.53}
+{'loss': 0.0374, 'grad_norm': 0.3573767840862274, 'learning_rate': 0.00018763620115132135, 'epoch': 0.56}
+{'loss': 0.0208, 'grad_norm': 0.3176114559173584, 'learning_rate': 0.00018621711730893776, 'epoch': 0.59}
+{'loss': 0.019, 'grad_norm': 0.2808276414871216, 'learning_rate': 0.00018472694015334132, 'epoch': 0.61}
+{'loss': 0.0226, 'grad_norm': 0.40433329343795776, 'learning_rate': 0.00018316689846176992, 'epoch': 0.64}
+{'loss': 0.02, 'grad_norm': 0.21750083565711975, 'learning_rate': 0.00018153827862068674, 'epoch': 0.66}
+{'loss': 0.0165, 'grad_norm': 0.23036223649978638, 'learning_rate': 0.00017984242356504585, 'epoch': 0.69}
+{'loss': 0.0165, 'grad_norm': 0.28104060888290405, 'learning_rate': 0.0001780807316709284, 'epoch': 0.72}
+{'loss': 0.0175, 'grad_norm': 0.1403673142194748, 'learning_rate': 0.0001762546556024633, 'epoch': 0.74}
+{'loss': 0.0189, 'grad_norm': 0.1813359558582306, 'learning_rate': 0.00017436570111398263, 'epoch': 0.77}
+{'loss': 0.0157, 'grad_norm': 0.21441170573234558, 'learning_rate': 0.00017241542580839964, 'epoch': 0.8}
+{'loss': 0.0152, 'grad_norm': 0.237451434135437, 'learning_rate': 0.00017040543785283336, 'epoch': 0.82}
+{'loss': 0.0147, 'grad_norm': 0.19355042278766632, 'learning_rate': 0.00016833739465253855, 'epoch': 0.85}
+{'loss': 0.0137, 'grad_norm': 0.20912857353687286, 'learning_rate': 0.0001662130014842348, 'epoch': 0.88}
+{'loss': 0.0154, 'grad_norm': 0.18381813168525696, 'learning_rate': 0.0001640340100899614, 'epoch': 0.9}
+{'loss': 0.0128, 'grad_norm': 0.31317925453186035, 'learning_rate': 0.0001618022172326179, 'epoch': 0.93}
+{'loss': 0.0128, 'grad_norm': 0.172776460647583, 'learning_rate': 0.00015951946321438073, 'epoch': 0.96}
+{'loss': 0.0134, 'grad_norm': 0.15976116061210632, 'learning_rate': 0.00015718763035921847, 'epoch': 0.98}
+{'loss': 0.0135, 'grad_norm': 0.18700586259365082, 'learning_rate': 0.00015480864146075608, 'epoch': 1.01}
+{'loss': 0.0116, 'grad_norm': 0.13638553023338318, 'learning_rate': 0.0001523844581967691, 'epoch': 1.04}
+{'loss': 0.0117, 'grad_norm': 0.07681620866060257, 'learning_rate': 0.0001499170795116139, 'epoch': 1.06}
+{'loss': 0.0117, 'grad_norm': 0.14746011793613434, 'learning_rate': 0.00014740853996792903, 'epoch': 1.09}
+{'loss': 0.0107, 'grad_norm': 0.09286495298147202, 'learning_rate': 0.00014486090806896596, 'epoch': 1.12}
+{'loss': 0.0114, 'grad_norm': 0.21925486624240875, 'learning_rate': 0.000142276284552933, 'epoch': 1.14}
+{'loss': 0.0113, 'grad_norm': 0.12349675595760345, 'learning_rate': 0.00013965680066075888, 'epoch': 1.17}
+{'loss': 0.0099, 'grad_norm': 0.06869905441999435, 'learning_rate': 0.00013700461637870402, 'epoch': 1.2}
+{'loss': 0.0101, 'grad_norm': 0.1728392243385315, 'learning_rate': 0.0001343219186572691, 'epoch': 1.22}
+{'loss': 0.0106, 'grad_norm': 0.12184710800647736, 'learning_rate': 0.00013161091960786902, 'epoch': 1.25}
+{'loss': 0.0094, 'grad_norm': 0.07468106597661972, 'learning_rate': 0.00012887385467876, 'epoch': 1.28}
+{'loss': 0.01, 'grad_norm': 0.028102880343794823, 'learning_rate': 0.000126112980811723, 'epoch': 1.3}
+{'loss': 0.0107, 'grad_norm': 0.08893314749002457, 'learning_rate': 0.00012333057458102417, 'epoch': 1.33}
+ 44% 500/1128 [6:00:03<2:50:21, 16.28s/it]
+  0% 0/83 [00:00<?, ?it/s]
+  2% 2/83 [00:01<00:53,  1.51it/s]
+  4% 3/83 [00:02<01:18,  1.02it/s]
+  5% 4/83 [00:04<01:26,  1.09s/it]
+  6% 5/83 [00:05<01:29,  1.15s/it]
+  7% 6/83 [00:06<01:31,  1.18s/it]
+  8% 7/83 [00:07<01:31,  1.21s/it]
+ 10% 8/83 [00:09<01:33,  1.24s/it]
+ 11% 9/83 [00:10<01:31,  1.24s/it]
+ 12% 10/83 [00:11<01:37,  1.33s/it]
+ 13% 11/83 [00:13<01:34,  1.32s/it]
+ 14% 12/83 [00:14<01:32,  1.31s/it]
+ 16% 13/83 [00:15<01:31,  1.31s/it]
+ 17% 14/83 [00:17<01:34,  1.37s/it]
+ 18% 15/83 [00:18<01:30,  1.33s/it]
+ 19% 16/83 [00:19<01:27,  1.31s/it]
+ 20% 17/83 [00:21<01:26,  1.32s/it]
+ 22% 18/83 [00:22<01:26,  1.33s/it]
+ 23% 19/83 [00:23<01:21,  1.27s/it]
+ 24% 20/83 [00:24<01:21,  1.29s/it]
+ 25% 21/83 [00:26<01:23,  1.34s/it]
+ 27% 22/83 [00:27<01:24,  1.39s/it]
+ 28% 23/83 [00:29<01:22,  1.37s/it]
+ 29% 24/83 [00:30<01:22,  1.41s/it]
+ 30% 25/83 [00:32<01:20,  1.38s/it]
+ 31% 26/83 [00:33<01:16,  1.34s/it]
+ 33% 27/83 [00:34<01:13,  1.31s/it]
+ 34% 28/83 [00:35<01:14,  1.35s/it]
+ 35% 29/83 [00:37<01:11,  1.32s/it]
+ 36% 30/83 [00:38<01:10,  1.33s/it]
+ 37% 31/83 [00:39<01:09,  1.33s/it]
+ 39% 32/83 [00:41<01:09,  1.37s/it]
+ 40% 33/83 [00:42<01:07,  1.35s/it]
+ 41% 34/83 [00:44<01:06,  1.36s/it]
+ 42% 35/83 [00:45<01:04,  1.35s/it]
+ 43% 36/83 [00:46<01:01,  1.31s/it]
+ 45% 37/83 [00:47<00:59,  1.30s/it]
+ 46% 38/83 [00:49<00:59,  1.33s/it]
+ 47% 39/83 [00:50<00:57,  1.30s/it]
+ 48% 40/83 [00:51<00:56,  1.31s/it]
+ 49% 41/83 [00:53<00:57,  1.37s/it]
+ 51% 42/83 [00:54<00:56,  1.38s/it]
+ 52% 43/83 [00:55<00:53,  1.33s/it]
+ 53% 44/83 [00:57<00:52,  1.34s/it]
+ 54% 45/83 [00:58<00:51,  1.35s/it]
+ 55% 46/83 [00:59<00:48,  1.31s/it]
+ 57% 47/83 [01:01<00:47,  1.33s/it]
+ 58% 48/83 [01:02<00:46,  1.33s/it]
+ 59% 49/83 [01:03<00:44,  1.30s/it]
+ 60% 50/83 [01:05<00:42,  1.29s/it]
+ 61% 51/83 [01:06<00:43,  1.35s/it]
+ 63% 52/83 [01:07<00:41,  1.34s/it]
+ 64% 53/83 [01:09<00:41,  1.38s/it]
+ 65% 54/83 [01:10<00:40,  1.38s/it]
+ 66% 55/83 [01:12<00:38,  1.36s/it]
+ 67% 56/83 [01:13<00:36,  1.35s/it]
+ 69% 57/83 [01:14<00:35,  1.37s/it]
+ 70% 58/83 [01:16<00:33,  1.33s/it]
+ 71% 59/83 [01:17<00:31,  1.31s/it]
+ 72% 60/83 [01:18<00:30,  1.32s/it]
+ 73% 61/83 [01:19<00:28,  1.29s/it]
+ 75% 62/83 [01:21<00:27,  1.30s/it]
+ 76% 63/83 [01:22<00:26,  1.32s/it]
+ 77% 64/83 [01:24<00:26,  1.37s/it]
+ 78% 65/83 [01:25<00:23,  1.31s/it]
+ 80% 66/83 [01:26<00:22,  1.30s/it]
+ 81% 67/83 [01:28<00:21,  1.35s/it]
+ 82% 68/83 [01:29<00:20,  1.38s/it]
+ 83% 69/83 [01:30<00:19,  1.41s/it]
+ 84% 70/83 [01:32<00:18,  1.39s/it]
+ 86% 71/83 [01:33<00:16,  1.35s/it]
+ 87% 72/83 [01:34<00:14,  1.36s/it]
+ 88% 73/83 [01:36<00:13,  1.33s/it]
+ 89% 74/83 [01:37<00:12,  1.34s/it]
+ 90% 75/83 [01:38<00:10,  1.31s/it]
+ 92% 76/83 [01:40<00:09,  1.31s/it]
+ 93% 77/83 [01:41<00:08,  1.35s/it]
+ 94% 78/83 [01:42<00:06,  1.32s/it]
+ 95% 79/83 [01:44<00:05,  1.33s/it]
+ 96% 80/83 [01:45<00:04,  1.34s/it]
+ 98% 81/83 [01:46<00:02,  1.34s/it]
+ 99% 82/83 [01:48<00:01,  1.31s/it]
+                                          
+{'eval_loss': 1.0851922035217285, 'eval_runtime': 110.7459, 'eval_samples_per_second': 2.998, 'eval_steps_per_second': 0.749, 'epoch': 1.33}
+ 44% 500/1128 [6:01:53<2:50:21, 16.28s/it]
+100% 83/83 [01:49<00:00,  1.26s/it]
+{'loss': 0.01, 'grad_norm': 0.06188392639160156, 'learning_rate': 0.0001205289303161867, 'epoch': 1.36}
+{'loss': 0.0103, 'grad_norm': 0.0570126511156559, 'learning_rate': 0.0001177103582101218, 'epoch': 1.38}
+{'loss': 0.0095, 'grad_norm': 0.04443497583270073, 'learning_rate': 0.00011487718241417902, 'epoch': 1.41}
+{'loss': 0.0104, 'grad_norm': 0.1530359834432602, 'learning_rate': 0.00011203173912168672, 'epoch': 1.44}
+{'loss': 0.0099, 'grad_norm': 0.09449383616447449, 'learning_rate': 0.00010917637464156289, 'epoch': 1.46}
+{'loss': 0.009, 'grad_norm': 0.03674893453717232, 'learning_rate': 0.00010631344346358467, 'epoch': 1.49}
+{'loss': 0.0092, 'grad_norm': 0.06193233281373978, 'learning_rate': 0.00010344530631691236, 'epoch': 1.52}
+{'loss': 0.01, 'grad_norm': 0.07036250084638596, 'learning_rate': 0.0001005743282234681, 'epoch': 1.54}
+{'loss': 0.0101, 'grad_norm': 0.08289878815412521, 'learning_rate': 9.770287654777532e-05, 'epoch': 1.57}
+{'loss': 0.0101, 'grad_norm': 0.04801681265234947, 'learning_rate': 9.483331904486601e-05, 'epoch': 1.6}
+{'loss': 0.0102, 'grad_norm': 0.04648803174495697, 'learning_rate': 9.196802190786641e-05, 'epoch': 1.62}
+{'loss': 0.0089, 'grad_norm': 0.03709934279322624, 'learning_rate': 8.910934781687025e-05, 'epoch': 1.65}
+{'loss': 0.0099, 'grad_norm': 0.03715434670448303, 'learning_rate': 8.625965399070915e-05, 'epoch': 1.68}
+{'loss': 0.0094, 'grad_norm': 0.06515638530254364, 'learning_rate': 8.342129024322592e-05, 'epoch': 1.7}
+{'loss': 0.0089, 'grad_norm': 0.037040624767541885, 'learning_rate': 8.059659704565425e-05, 'epoch': 1.73}
+{'loss': 0.0096, 'grad_norm': 0.053308237344026566, 'learning_rate': 7.778790359670196e-05, 'epoch': 1.76}
+{'loss': 0.0093, 'grad_norm': 0.056621767580509186, 'learning_rate': 7.499752590192936e-05, 'epoch': 1.78}
+{'loss': 0.0068, 'grad_norm': 0.027329932898283005, 'learning_rate': 7.222776486400674e-05, 'epoch': 1.81}
+{'loss': 0.0086, 'grad_norm': 0.051840029656887054, 'learning_rate': 6.948090438542509e-05, 'epoch': 1.84}
+{'loss': 0.0086, 'grad_norm': 0.04208240285515785, 'learning_rate': 6.675920948522537e-05, 'epoch': 1.86}
+{'loss': 0.0089, 'grad_norm': 0.04190574958920479, 'learning_rate': 6.406492443129828e-05, 'epoch': 1.89}
+{'loss': 0.0089, 'grad_norm': 0.07502225041389465, 'learning_rate': 6.140027088979555e-05, 'epoch': 1.91}
+{'loss': 0.0092, 'grad_norm': 0.04467391595244408, 'learning_rate': 5.876744609317804e-05, 'epoch': 1.94}
+{'loss': 0.0097, 'grad_norm': 0.03343129903078079, 'learning_rate': 5.616862102841145e-05, 'epoch': 1.97}
+{'loss': 0.0095, 'grad_norm': 0.03726806491613388, 'learning_rate': 5.360593864680386e-05, 'epoch': 1.99}
+{'loss': 0.0081, 'grad_norm': 0.03481247276067734, 'learning_rate': 5.108151209696082e-05, 'epoch': 2.02}
+{'loss': 0.0078, 'grad_norm': 0.060570865869522095, 'learning_rate': 4.859742298231561e-05, 'epoch': 2.05}
+{'loss': 0.0077, 'grad_norm': 0.04372688755393028, 'learning_rate': 4.6155719644670706e-05, 'epoch': 2.07}
+{'loss': 0.0088, 'grad_norm': 0.047634467482566833, 'learning_rate': 4.375841547516668e-05, 'epoch': 2.1}
+{'loss': 0.0085, 'grad_norm': 0.0547715499997139, 'learning_rate': 4.140748725407069e-05, 'epoch': 2.13}
+{'loss': 0.0087, 'grad_norm': 0.06691771000623703, 'learning_rate': 3.9104873520753815e-05, 'epoch': 2.15}
+{'loss': 0.0071, 'grad_norm': 0.05117977783083916, 'learning_rate': 3.685247297520121e-05, 'epoch': 2.18}
+{'loss': 0.007, 'grad_norm': 0.04221653193235397, 'learning_rate': 3.465214291237311e-05, 'epoch': 2.21}
+{'loss': 0.0084, 'grad_norm': 0.05381516367197037, 'learning_rate': 3.2505697690707916e-05, 'epoch': 2.23}
+{'loss': 0.0078, 'grad_norm': 0.058119893074035645, 'learning_rate': 3.0414907236030188e-05, 'epoch': 2.26}
+{'loss': 0.0085, 'grad_norm': 0.050276774913072586, 'learning_rate': 2.8381495582096717e-05, 'epoch': 2.29}
+{'loss': 0.0081, 'grad_norm': 0.05094849690794945, 'learning_rate': 2.640713944898483e-05, 'epoch': 2.31}
+{'loss': 0.0073, 'grad_norm': 0.04090094566345215, 'learning_rate': 2.4493466860494817e-05, 'epoch': 2.34}
+{'loss': 0.0066, 'grad_norm': 0.038453321903944016, 'learning_rate': 2.2642055801706207e-05, 'epoch': 2.37}
+{'loss': 0.0069, 'grad_norm': 0.045939814299345016, 'learning_rate': 2.0854432917795763e-05, 'epoch': 2.39}
+{'loss': 0.0084, 'grad_norm': 0.03232695907354355, 'learning_rate': 1.9132072255189027e-05, 'epoch': 2.42}
+{'loss': 0.0076, 'grad_norm': 0.04009915143251419, 'learning_rate': 1.7476394046084367e-05, 'epoch': 2.45}
+{'loss': 0.0074, 'grad_norm': 0.03711983188986778, 'learning_rate': 1.5888763537351205e-05, 'epoch': 2.47}
+{'loss': 0.0086, 'grad_norm': 0.03625223785638809, 'learning_rate': 1.4370489864768478e-05, 'epoch': 2.5}
+{'loss': 0.0076, 'grad_norm': 0.03659547492861748, 'learning_rate': 1.2922824973531279e-05, 'epoch': 2.53}
+{'loss': 0.0076, 'grad_norm': 0.056817617267370224, 'learning_rate': 1.1546962585915999e-05, 'epoch': 2.55}
+{'loss': 0.007, 'grad_norm': 0.06775732338428497, 'learning_rate': 1.0244037216955304e-05, 'epoch': 2.58}
+{'loss': 0.0069, 'grad_norm': 0.03552146255970001, 'learning_rate': 9.01512323893443e-06, 'epoch': 2.61}
+{'loss': 0.0073, 'grad_norm': 0.031319744884967804, 'learning_rate': 7.861233995480244e-06, 'epoch': 2.63}
+{'loss': 0.0081, 'grad_norm': 0.047514643520116806, 'learning_rate': 6.783320965973594e-06, 'epoch': 2.66}
+ 89% 1000/1128 [8:18:35<34:32, 16.19s/it]
+  0% 0/83 [00:00<?, ?it/s]
+  2% 2/83 [00:01<00:46,  1.73it/s]
+  4% 3/83 [00:02<01:05,  1.22it/s]
+  5% 4/83 [00:03<01:14,  1.06it/s]
+  6% 5/83 [00:04<01:19,  1.02s/it]
+  7% 6/83 [00:05<01:22,  1.07s/it]
+  8% 7/83 [00:06<01:23,  1.09s/it]
+ 10% 8/83 [00:08<01:23,  1.11s/it]
+ 11% 9/83 [00:09<01:23,  1.13s/it]
+ 12% 10/83 [00:10<01:22,  1.14s/it]
+ 13% 11/83 [00:11<01:20,  1.11s/it]
+ 14% 12/83 [00:12<01:19,  1.13s/it]
+ 16% 13/83 [00:13<01:19,  1.14s/it]
+ 17% 14/83 [00:14<01:18,  1.14s/it]
+ 18% 15/83 [00:16<01:17,  1.15s/it]
+ 19% 16/83 [00:17<01:17,  1.15s/it]
+ 20% 17/83 [00:18<01:16,  1.15s/it]
+ 22% 18/83 [00:19<01:15,  1.15s/it]
+ 23% 19/83 [00:20<01:12,  1.13s/it]
+ 24% 20/83 [00:21<01:11,  1.13s/it]
+ 25% 21/83 [00:22<01:10,  1.14s/it]
+ 27% 22/83 [00:24<01:09,  1.15s/it]
+ 28% 23/83 [00:25<01:09,  1.15s/it]
+ 29% 24/83 [00:26<01:08,  1.15s/it]
+ 30% 25/83 [00:27<01:06,  1.15s/it]
+ 31% 26/83 [00:28<01:05,  1.16s/it]
+ 33% 27/83 [00:29<01:04,  1.16s/it]
+ 34% 28/83 [00:31<01:03,  1.16s/it]
+ 35% 29/83 [00:32<01:02,  1.16s/it]
+ 36% 30/83 [00:33<01:01,  1.16s/it]
+ 37% 31/83 [00:34<01:00,  1.16s/it]
+ 39% 32/83 [00:35<00:58,  1.16s/it]
+ 40% 33/83 [00:36<00:57,  1.16s/it]
+ 41% 34/83 [00:37<00:56,  1.16s/it]
+ 42% 35/83 [00:39<00:55,  1.16s/it]
+ 43% 36/83 [00:40<00:54,  1.16s/it]
+ 45% 37/83 [00:41<00:53,  1.16s/it]
+ 46% 38/83 [00:42<00:52,  1.16s/it]
+ 47% 39/83 [00:43<00:50,  1.16s/it]
+ 48% 40/83 [00:44<00:49,  1.16s/it]
+ 49% 41/83 [00:46<00:48,  1.16s/it]
+ 51% 42/83 [00:47<00:47,  1.16s/it]
+ 52% 43/83 [00:48<00:46,  1.16s/it]
+ 53% 44/83 [00:49<00:45,  1.16s/it]
+ 54% 45/83 [00:50<00:43,  1.16s/it]
+ 55% 46/83 [00:51<00:42,  1.16s/it]
+ 57% 47/83 [00:53<00:41,  1.16s/it]
+ 58% 48/83 [00:54<00:40,  1.16s/it]
+ 59% 49/83 [00:55<00:39,  1.16s/it]
+ 60% 50/83 [00:56<00:38,  1.16s/it]
+ 61% 51/83 [00:57<00:37,  1.16s/it]
+ 63% 52/83 [00:58<00:35,  1.13s/it]
+ 64% 53/83 [00:59<00:34,  1.14s/it]
+ 65% 54/83 [01:00<00:32,  1.11s/it]
+ 66% 55/83 [01:02<00:30,  1.10s/it]
+ 67% 56/83 [01:03<00:30,  1.11s/it]
+ 69% 57/83 [01:04<00:29,  1.13s/it]
+ 70% 58/83 [01:05<00:28,  1.14s/it]
+ 71% 59/83 [01:06<00:27,  1.14s/it]
+ 72% 60/83 [01:07<00:26,  1.15s/it]
+ 73% 61/83 [01:08<00:25,  1.15s/it]
+ 75% 62/83 [01:10<00:24,  1.15s/it]
+ 76% 63/83 [01:11<00:23,  1.15s/it]
+ 77% 64/83 [01:12<00:21,  1.16s/it]
+ 78% 65/83 [01:13<00:20,  1.13s/it]
+ 80% 66/83 [01:14<00:19,  1.13s/it]
+ 81% 67/83 [01:15<00:18,  1.14s/it]
+ 82% 68/83 [01:16<00:17,  1.15s/it]
+ 83% 69/83 [01:18<00:16,  1.15s/it]
+ 84% 70/83 [01:19<00:14,  1.15s/it]
+ 86% 71/83 [01:20<00:13,  1.15s/it]
+ 87% 72/83 [01:21<00:12,  1.16s/it]
+ 88% 73/83 [01:22<00:11,  1.16s/it]
+ 89% 74/83 [01:24<00:12,  1.40s/it]
+ 90% 75/83 [01:25<00:10,  1.33s/it]
+ 92% 76/83 [01:27<00:08,  1.28s/it]
+ 93% 77/83 [01:28<00:07,  1.24s/it]
+ 94% 78/83 [01:29<00:06,  1.22s/it]
+ 95% 79/83 [01:30<00:04,  1.20s/it]
+ 96% 80/83 [01:31<00:03,  1.19s/it]
+ 98% 81/83 [01:32<00:02,  1.18s/it]
+ 99% 82/83 [01:33<00:01,  1.17s/it]
+                                         
+{'eval_loss': 1.2187283039093018, 'eval_runtime': 96.3082, 'eval_samples_per_second': 3.447, 'eval_steps_per_second': 0.862, 'epoch': 2.66}
+ 89% 1000/1128 [8:20:12<34:32, 16.19s/it]
+100% 83/83 [01:35<00:00,  1.16s/it]
+{'loss': 0.0081, 'grad_norm': 0.035782117396593094, 'learning_rate': 5.782272980974057e-06, 'epoch': 2.69}
+{'loss': 0.0076, 'grad_norm': 0.03379444777965546, 'learning_rate': 4.858915489303872e-06, 'epoch': 2.71}
+{'loss': 0.008, 'grad_norm': 0.050077978521585464, 'learning_rate': 4.014009877395497e-06, 'epoch': 2.74}
+{'loss': 0.0068, 'grad_norm': 0.039912909269332886, 'learning_rate': 3.2482528414639613e-06, 'epoch': 2.77}
+{'loss': 0.0074, 'grad_norm': 0.030186114832758904, 'learning_rate': 2.562275813021964e-06, 'epoch': 2.79}
+{'loss': 0.0069, 'grad_norm': 0.03708343952894211, 'learning_rate': 1.9566444382109973e-06, 'epoch': 2.82}
+{'loss': 0.0071, 'grad_norm': 0.049992792308330536, 'learning_rate': 1.4318581113783592e-06, 'epoch': 2.85}
+{'loss': 0.0059, 'grad_norm': 0.03581547737121582, 'learning_rate': 9.883495632840856e-07, 'epoch': 2.87}
+{'loss': 0.0078, 'grad_norm': 0.04317958652973175, 'learning_rate': 6.264845042779022e-07, 'epoch': 2.9}
+{'loss': 0.0078, 'grad_norm': 0.04832512512803078, 'learning_rate': 3.465613227400133e-07, 'epoch': 2.93}
+{'loss': 0.0078, 'grad_norm': 0.04543057456612587, 'learning_rate': 1.488108390346743e-07, 'epoch': 2.95}
+{'loss': 0.0084, 'grad_norm': 0.024375252425670624, 'learning_rate': 3.339611517918506e-08, 'epoch': 2.98}
+{'train_runtime': 32152.7198, 'train_samples_per_second': 0.561, 'train_steps_per_second': 0.035, 'train_loss': 0.0430030986858228, 'epoch': 3.0}
+100% 1128/1128 [8:55:52<00:00, 16.41s/it]
+============================================================
+✅ TRAINING COMPLETED
+============================================================
+Total steps: 1128
+Total time: 8h 55m 52s
+End time: 2025-12-11 02:09:44
+============================================================
+
+100% 1128/1128 [8:55:52<00:00, 28.50s/it]
+***** train metrics *****
+  epoch                    =          3.0
+  total_flos               = 1477319886GF
+  train_loss               =        0.043
+  train_runtime            =   8:55:52.71
+  train_samples_per_second =        0.561
+  train_steps_per_second   =        0.035
+100% 83/83 [01:34<00:00,  1.14s/it]
+***** eval metrics *****
+  epoch                   =        3.0
+  eval_loss               =     1.0852
+  eval_runtime            = 0:01:35.49
+  eval_samples_per_second =      3.477
+  eval_steps_per_second   =      0.869
+Trainer.tokenizer is now deprecated. You should use Trainer.processing_class instead.
+
+WARNING: gsutil rsync uses hashes when modification time is not available at
+both the source and destination. Your crcmod installation isn't using the
+module's C extension, so checksumming will run very slowly. If this is your
+first rsync since updating gsutil, this rsync can take significantly longer than
+usual. For help installing the extension, please see "gsutil help crcmod".
+
+Building synchronization state...
+Starting synchronization...
+Copying file:///content/models/mistral-sql-final/final_model/README.md [Content-Type=text/markdown]...
+Copying file:///content/models/mistral-sql-final/all_results.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/final_model/adapter_model.safetensors [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/final_model/adapter_config.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/final_model/tokenizer.model [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/eval_results.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/final_model/tokenizer_config.json [Content-Type=application/json]...
+==> NOTE: You are uploading one or more large file(s), which would run
+significantly faster if you enable parallel composite uploads. This
+feature can be enabled by editing the
+"parallel_composite_upload_threshold" value in your .boto
+configuration file. However, note that if you do this large files will
+be uploaded as `composite objects
+<https://cloud.google.com/storage/docs/composite-objects>`_,which
+means that any user who downloads such objects will need to have a
+compiled crcmod installed (see "gsutil help crcmod"). This is because
+without a compiled crcmod, computing checksums on composite objects is
+so slow that gsutil disables downloads of composite objects.
+
+Copying file:///content/models/mistral-sql-final/final_model/tokenizer.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/final_model/special_tokens_map.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/final_model/training_config.yaml [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/train_results.json [Content-Type=application/json]...
+-
+Operation completed over 11 objects/163.9 MiB.                                   
+
+============================================================
+Training completed at: 2025-12-11 02:11:46
+============================================================
+
+Syncing final model to GCS...
+
+WARNING: gsutil rsync uses hashes when modification time is not available at
+both the source and destination. Your crcmod installation isn't using the
+module's C extension, so checksumming will run very slowly. If this is your
+first rsync since updating gsutil, this rsync can take significantly longer than
+usual. For help installing the extension, please see "gsutil help crcmod".
+
+Building synchronization state...
+Starting synchronization...
+Copying file:///content/models/mistral-sql-final/all_results.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/README.md [Content-Type=text/markdown]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/adapter_model.safetensors [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/adapter_config.json [Content-Type=application/json]...
+==> NOTE: You are uploading one or more large file(s), which would run
+significantly faster if you enable parallel composite uploads. This
+feature can be enabled by editing the
+"parallel_composite_upload_threshold" value in your .boto
+configuration file. However, note that if you do this large files will
+be uploaded as `composite objects
+<https://cloud.google.com/storage/docs/composite-objects>`_,which
+means that any user who downloads such objects will need to have a
+compiled crcmod installed (see "gsutil help crcmod"). This is because
+without a compiled crcmod, computing checksums on composite objects is
+so slow that gsutil disables downloads of composite objects.
+
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/optimizer.pt [Content-Type=application/vnd.snesdev-page-table]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/rng_state.pth [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/scheduler.pt [Content-Type=application/vnd.snesdev-page-table]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/tokenizer.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/trainer_state.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/special_tokens_map.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/README.md [Content-Type=text/markdown]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/tokenizer_config.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/training_args.bin [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/adapter_model.safetensors [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/optimizer.pt [Content-Type=application/vnd.snesdev-page-table]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/scheduler.pt [Content-Type=application/vnd.snesdev-page-table]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1000/tokenizer.model [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/special_tokens_map.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/tokenizer.model [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/README.md [Content-Type=text/markdown]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/training_args.bin [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/tokenizer_config.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/adapter_config.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/tokenizer.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/tokenizer.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/adapter_config.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/training_args.bin [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/rng_state.pth [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/optimizer.pt [Content-Type=application/vnd.snesdev-page-table]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/adapter_model.safetensors [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/rng_state.pth [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/tokenizer.model [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/tokenizer_config.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/special_tokens_map.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/trainer_state.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/eval_results.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/checkpoint-1128/trainer_state.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/final_model/adapter_config.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/final_model/README.md [Content-Type=text/markdown]...
+Copying file:///content/models/mistral-sql-final/checkpoint-500/scheduler.pt [Content-Type=application/vnd.snesdev-page-table]...
+Copying file:///content/models/mistral-sql-final/final_model/adapter_model.safetensors [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/final_model/special_tokens_map.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/final_model/tokenizer.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/final_model/tokenizer.model [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/final_model/training_config.yaml [Content-Type=application/octet-stream]...
+Copying file:///content/models/mistral-sql-final/final_model/tokenizer_config.json [Content-Type=application/json]...
+Copying file:///content/models/mistral-sql-final/train_results.json [Content-Type=application/json]...
+-
+Operation completed over 47 objects/1.6 GiB.                                     
+
+============================================================
+✅ MODEL SAVED
+============================================================
+Location: gs://sql-codegen-slm-data/models/mistral-sql-final/
+
+Files:
+       348  2025-12-11T02:11:52Z  gs://sql-codegen-slm-data/models/mistral-sql-final/all_results.json
+       160  2025-12-11T02:12:01Z  gs://sql-codegen-slm-data/models/mistral-sql-final/eval_results.json
+       208  2025-12-11T02:12:00Z  gs://sql-codegen-slm-data/models/mistral-sql-final/train_results.json
+                                 gs://sql-codegen-slm-data/models/mistral-sql-final/checkpoint-1000/
+                                 gs://sql-codegen-slm-data/models/mistral-sql-final/checkpoint-1128/
+                                 gs://sql-codegen-slm-data/models/mistral-sql-final/checkpoint-500/
+                                 gs://sql-codegen-slm-data/models/mistral-sql-final/final_model/
+TOTAL: 3 objects, 716 bytes (716 B)
+============================================================
+
+
+ Loading base model + trained adapters...
+Loading base model...
+Loading checkpoint shards: 100% 2/2 [00:17<00:00,  8.16s/it]Loading tokenizer...
+Loading your trained LoRA adapters...
+✅ Model loaded successfully!
+Model device: cuda:0
+
+============================================================
+TESTING MODEL INFERENCE
+============================================================
+
+GENERATED SQL:
+------------------------------------------------------------
+SELECT T1.name , sum(T2.total) FROM customers AS T1 JOIN orders AS T2 ON T1.customer_id = T2.customer_id GROUP BY T1.customer_id ORDER BY sum(T2.total) DESC LIMIT 5;
+============================================================
+
+
+
+============================================================
+TEST 1: Find all customers who signed up in 2024
+============================================================
+SELECT name FROM customers WHERE created_at LIKE '2024%';
+
+Database: customers_and_addresses
+
+Schema:
+CREATE TABLE addresses (address_id SERIAL PRIMARY KEY, address VARCHAR(1024), city VARCHAR(1024), zip_postcode VARCHAR(1024), state_province_county VARCHAR(1024), country VARCHAR(1024), other_address_details VARCHAR(1024));
+CREATE TABLE customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100), email VARCHAR(100), created_at TIMESTAMP);
+INSERT INTO customers (name, email) VALUES ('Dickens Storm', 'dstorm@example.net');
+INSERT INTO customers (name, email) VALUES ('Aniyah Brooks', 'abrooks@example.net');
+INSERT INTO customers (name, email) VALUES ('Kiel Gutkowski', 'kgutkowski@example.org');
+INSERT INTO customers (name, email) VALUES ('Blaise Muller', '
+
+============================================================
+TEST 2: What is the average price of products in the Electronics category?
+============================================================
+SELECT avg(price) FROM products WHERE category = 'Electronics';
+
+Database: customers
+
+Schema:
+CREATE TABLE customers (customer_id SERIAL PRIMARY KEY, first_name VARCHAR(50), last_name VARCHAR(50), email VARCHAR(50), phone VARCHAR(50), address VARCHAR(50), city VARCHAR(50), state VARCHAR(50), zip_postcode VARCHAR(50), country VARCHAR(50));
+INSERT INTO customers (first_name, last_name, email, phone, address, city, state, zip_postcode, country) VALUES ('Dee', 'Grant', 'xhartmann@example.net', '(673)872-0838x975', '1965 Abernathy Plains', 'Mohrville', 'Nebraska', '662', 'USA');
+INSERT INTO customers (first_name, last_name, email, phone, address, city, state, zip_postcode, country) VALUES ('Rylan', 'Homenick',
+
+============================================================
+TEST 3: List all employees and their department budgets
+============================================================
+SELECT T1.name , T2.budget FROM employees AS T1 JOIN departments AS T2 ON T1.department = T2.department_id;
+
+
+
+============================================================
+TRAINING COMPLETE - SUMMARY
+============================================================
+Completion time: 2025-12-11 06:37:21
+
+Model location: gs://sql-codegen-slm-data/models/mistral-sql-final/
+TensorBoard logs: gs://sql-codegen-slm-data/logs/
+
+Files saved:
+  - adapter_model.safetensors (LoRA weights)
+  - adapter_config.json
+  - tokenizer files
+
+GPU Memory used:
+  Max allocated: 13.05 GB
+  Max reserved: 18.03 GB
+============================================================
+
+🎉 Training complete! Model ready for evaluation.
+
+Next steps:
+1. Download model: gsutil -m cp -r {GCS_OUTPUT}/ ./model/
+2. Run evaluation notebook
+3. Deploy to inference endpoint
+
+

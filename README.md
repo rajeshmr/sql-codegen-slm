@@ -1,16 +1,93 @@
-# SQL Code Generator - Fine-tuned Small Language Model
+# SQL Code Generator - Fine-tuned Mistral-7B for Text-to-SQL
 
-A fine-tuned Mistral-7B model that generates PostgreSQL queries from natural language, trained on the Spider dataset.
+[![HuggingFace Model](https://img.shields.io/badge/🤗%20Model-mistral--7b--text--to--sql-blue)](https://huggingface.co/rajeshmanikka/mistral-7b-text-to-sql)
+[![HuggingFace Spaces](https://img.shields.io/badge/🤗%20Demo-text--to--sql--demo-orange)](https://huggingface.co/spaces/rajeshmanikka/text-to-sql-demo)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-## Project Status
+A fine-tuned Mistral-7B model that generates PostgreSQL queries from natural language, trained on the Spider dataset using LoRA (Low-Rank Adaptation).
 
-🚧 **In Progress - Module 2.1: Training Environment Setup**
+## 🎯 Quick Links
 
-## Quick Start
+| Resource | Link |
+|----------|------|
+| **🚀 Live Demo** | [HuggingFace Spaces](https://huggingface.co/spaces/rajeshmanikka/text-to-sql-demo) |
+| **🤗 Model** | [rajeshmanikka/mistral-7b-text-to-sql](https://huggingface.co/rajeshmanikka/mistral-7b-text-to-sql) |
+| **📊 Dataset** | [Spider (Yale)](https://yale-lily.github.io/spider) |
+| **📖 Usage Guide** | [docs/USAGE.md](docs/USAGE.md) |
 
-Setup instructions coming soon.
+## ✨ Key Results
 
-## Project Structure
+| Metric | Value |
+|--------|-------|
+| **Training Time** | 8h 55m (A100 40GB) |
+| **Training Cost** | ~$60 (Colab Pro+) |
+| **Final Train Loss** | 0.043 |
+| **Final Val Loss** | 1.085 |
+| **Trainable Params** | 42M (1.11%) |
+| **Model Size** | ~164MB (LoRA adapters) |
+
+## 🚀 Quick Start
+
+### Use the Model (from HuggingFace Hub)
+
+```python
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+from peft import PeftModel
+
+# Load with 4-bit quantization
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type="nf4"
+)
+
+# Load base model
+base_model = AutoModelForCausalLM.from_pretrained(
+    "mistralai/Mistral-7B-v0.1",
+    quantization_config=bnb_config,
+    device_map="auto"
+)
+
+# Load tokenizer and LoRA adapters
+tokenizer = AutoTokenizer.from_pretrained("rajeshmanikka/mistral-7b-text-to-sql")
+model = PeftModel.from_pretrained(base_model, "rajeshmanikka/mistral-7b-text-to-sql")
+
+# Generate SQL
+schema = """
+CREATE TABLE customers (customer_id SERIAL PRIMARY KEY, name VARCHAR(100));
+CREATE TABLE orders (order_id SERIAL PRIMARY KEY, customer_id INTEGER, total DECIMAL);
+"""
+
+prompt = f"""<s>[INST] You are a SQL expert. Given the following PostgreSQL database schema, write a SQL query that answers the user's question.
+
+Database Schema:
+{schema}
+
+Question: Find the top 5 customers by total order amount
+
+Generate only the SQL query without any explanation. [/INST]"""
+
+inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_new_tokens=256, temperature=0.1)
+sql = tokenizer.decode(outputs[0], skip_special_tokens=True).split("[/INST]")[-1].strip()
+print(sql)
+```
+
+### Example Output
+
+```sql
+SELECT c.name, SUM(o.total) as total_amount
+FROM customers c
+JOIN orders o ON c.customer_id = o.customer_id
+GROUP BY c.customer_id, c.name
+ORDER BY total_amount DESC
+LIMIT 5;
+```
+
+## 📁 Project Structure
 
 ```
 sql-codegen-slm/
@@ -20,39 +97,33 @@ sql-codegen-slm/
 │   └── demo/              # Example schemas
 ├── training/              # Model training
 │   ├── configs/           # Training configuration files
-│   ├── logs/              # Training logs and metrics
-│   └── models/            # Saved model checkpoints
-├── backend/               # FastAPI application
-│   └── app/               # API implementation
-├── frontend/              # Next.js application
-├── deployment/            # Deployment configurations
-│   ├── backend/           # Dockerfile, Cloud Run configs
-│   └── frontend/          # Frontend deployment configs
-├── tests/                 # Test suites
-│   ├── data/              # Data pipeline tests
-│   ├── training/          # Training tests
-│   ├── backend/           # API tests
-│   └── integration/       # End-to-end tests
+│   ├── train.py           # Main training script
+│   └── validation.py      # Validation utilities
+├── notebooks/             # Jupyter notebooks
+│   ├── train_colab.ipynb  # Training notebook
+│   └── validation_notebook.ipynb
+├── spaces/                # HuggingFace Spaces demo
+│   ├── app.py             # Gradio application
+│   └── requirements.txt
+├── scripts/               # Utility scripts
+│   ├── upload_to_hf.py    # Upload model to HF Hub
+│   └── deploy_to_spaces.sh # Deploy demo to Spaces
 ├── docs/                  # Documentation
-│   ├── architecture.md    # System design
-│   └── api.md             # API documentation
-└── scripts/               # Helper scripts
-    ├── setup_env.sh       # Create conda environment
-    ├── activate_env.sh    # Activate environment
-    ├── clean_env.sh       # Remove environment
-    ├── verify_setup.sh    # Verify project setup
-    └── init_git.sh        # Initialize git repository
+│   ├── MODEL_CARD.md      # HuggingFace model card
+│   ├── USAGE.md           # Usage guide
+│   └── DEPLOYMENT.md      # Deployment instructions
+└── tests/                 # Test suites
 ```
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 - **Language**: Python 3.10
-- **Model**: Mistral-7B (fine-tuned)
-- **Backend**: FastAPI
-- **Frontend**: Next.js
-- **Training**: GCP (Google Cloud Platform)
-- **Deployment**: GCP Cloud Run
+- **Base Model**: Mistral-7B-v0.1
+- **Fine-tuning**: LoRA (PEFT)
+- **Quantization**: 4-bit NF4 (bitsandbytes)
+- **Training**: Google Colab Pro+ (A100)
 - **Dataset**: Spider (Text-to-SQL)
+- **Demo**: Gradio on HuggingFace Spaces
 
 ## Environment Setup
 
@@ -321,14 +392,101 @@ python -m training.train \
 - **Location**: `gs://sql-codegen-slm-data/models/`
 - **Files**: `adapter_model.bin`, `adapter_config.json`, tokenizer
 
-### Expected Results
+### Training Results
 
-| Metric | Expected Value |
-|--------|----------------|
-| Training loss | ~0.5-1.0 |
-| Validation loss | ~1.0-1.5 |
-| Training time | 8-12 hours (A100) |
+| Metric | Value |
+|--------|-------|
+| Final Training Loss | 0.043 |
+| Final Validation Loss | 1.085 |
+| Training Time | 8h 55m |
+| Total Steps | 1,128 |
+| GPU Memory Used | 13.05 GB |
+
+### Loss Progression
+
+```
+Epoch 0.1: 0.73 → Epoch 0.5: 0.03 → Epoch 1.0: 0.01 → Epoch 2.0: 0.008 → Epoch 3.0: 0.007
+```
+
+## 🧪 Example Generated SQL
+
+| Question | Generated SQL |
+|----------|---------------|
+| Find top 5 customers by total orders | `SELECT c.name, SUM(o.total) FROM customers c JOIN orders o ON c.customer_id = o.customer_id GROUP BY c.customer_id ORDER BY SUM(o.total) DESC LIMIT 5` |
+| Average price in Electronics category | `SELECT AVG(price) FROM products WHERE category = 'Electronics'` |
+| Employees with department budgets | `SELECT e.name, d.budget FROM employees e JOIN departments d ON e.department_id = d.department_id` |
+
+## 📚 Methodology
+
+### Why LoRA?
+- **Efficiency**: Only 1.11% of parameters trained (42M vs 3.8B)
+- **Memory**: Fits on consumer GPUs with 4-bit quantization
+- **Speed**: 9 hours vs days for full fine-tuning
+- **Quality**: Comparable results to full fine-tuning for this task
+
+### Why Spider Dataset?
+- **Diversity**: 200+ database schemas across 138 domains
+- **Complexity**: Includes JOINs, aggregations, subqueries, nested queries
+- **Quality**: Human-annotated by Yale researchers
+- **Benchmark**: Standard evaluation for text-to-SQL models
+
+### Why Colab Pro+?
+- **Cost**: $60/month vs $200+ for equivalent GCP compute
+- **Simplicity**: No infrastructure setup required
+- **A100 Access**: High-priority GPU allocation
+- **Checkpointing**: Automatic saves to Google Cloud Storage
+
+## ⚠️ Limitations
+
+1. **PostgreSQL Only**: Generates PostgreSQL syntax (not MySQL/SQLite)
+2. **Schema Required**: Must provide complete database schema
+3. **Complex Queries**: Very deep nesting may be inaccurate
+4. **No Validation**: Generated SQL should be reviewed before execution
+
+## 📖 References
+
+### Spider Dataset
+```bibtex
+@inproceedings{yu2018spider,
+  title={Spider: A Large-Scale Human-Labeled Dataset for Complex and Cross-Domain Semantic Parsing and Text-to-SQL Task},
+  author={Yu, Tao and Zhang, Rui and Yang, Kai and Yasunaga, Michihiro and Wang, Dongxu and Li, Zifan and Ma, James and Li, Irene and Yao, Qingning and Roman, Shanelle and others},
+  booktitle={EMNLP},
+  year={2018}
+}
+```
+
+### LoRA
+```bibtex
+@article{hu2021lora,
+  title={LoRA: Low-Rank Adaptation of Large Language Models},
+  author={Hu, Edward J and Shen, Yelong and Wallis, Phillip and Allen-Zhu, Zeyuan and Li, Yuanzhi and Wang, Shean and Wang, Lu and Chen, Weizhu},
+  journal={arXiv preprint arXiv:2106.09685},
+  year={2021}
+}
+```
+
+### Mistral
+```bibtex
+@article{jiang2023mistral,
+  title={Mistral 7B},
+  author={Jiang, Albert Q and Sablayrolles, Alexandre and Mensch, Arthur and Bamford, Chris and Chaplot, Devendra Singh and Casas, Diego de las and Bressand, Florian and Lengyel, Gianna and Lample, Guillaume and Saulnier, Lucile and others},
+  journal={arXiv preprint arXiv:2310.06825},
+  year={2023}
+}
+```
+
+## 🙏 Acknowledgments
+
+- **[Mistral AI](https://mistral.ai/)** for the Mistral-7B base model
+- **[Yale LILY Lab](https://yale-lily.github.io/)** for the Spider dataset
+- **[Hugging Face](https://huggingface.co/)** for transformers and PEFT libraries
+- **[Tim Dettmers](https://github.com/TimDettmers)** for bitsandbytes quantization
+
+## 📬 Contact
+
+- **GitHub**: [rajeshmr/sql-codegen-slm](https://github.com/rajeshmr/sql-codegen-slm)
+- **HuggingFace**: [rajeshmanikka](https://huggingface.co/rajeshmanikka)
 
 ## License
 
-MIT
+Apache 2.0
