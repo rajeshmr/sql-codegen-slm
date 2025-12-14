@@ -3,25 +3,26 @@
 # Deploy Gradio app to HuggingFace Spaces
 #
 # This script:
-# 1. Clones or creates the HF Spaces repository
-# 2. Copies files from spaces/ directory
-# 3. Commits and pushes to HuggingFace Spaces
+# 1. Creates the HF Space if it doesn't exist (using huggingface_hub)
+# 2. Clones the Spaces repository
+# 3. Copies files from spaces/ directory
+# 4. Commits and pushes to HuggingFace Spaces
 #
 # Usage:
 #   bash scripts/deploy_to_spaces.sh
 #
 # Requirements:
 #   - git installed
-#   - HuggingFace CLI logged in (huggingface-cli login)
-#   - Or HF_TOKEN environment variable set
+#   - huggingface_hub installed (pip install huggingface_hub)
+#   - HuggingFace CLI logged in (huggingface-cli login) or HF_TOKEN set
 
 set -e
 
 # Configuration
 HF_USERNAME="rajeshmanikka"
 SPACE_NAME="text-to-sql-demo"
-SPACE_REPO="https://huggingface.co/spaces/${HF_USERNAME}/${SPACE_NAME}"
-SPACE_GIT_URL="https://huggingface.co/spaces/${HF_USERNAME}/${SPACE_NAME}"
+SPACE_ID="${HF_USERNAME}/${SPACE_NAME}"
+SPACE_REPO="https://huggingface.co/spaces/${SPACE_ID}"
 
 # Get script directory and project root
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -54,21 +55,29 @@ for file in "app.py" "requirements.txt" "README.md"; do
     fi
 done
 
-# Check HuggingFace authentication
+# Check HuggingFace authentication and get token
 echo ""
 echo "🔐 Checking HuggingFace authentication..."
 
 if [ -n "$HF_TOKEN" ]; then
     echo "   ✅ Using HF_TOKEN from environment"
-    # Configure git to use token
-    GIT_URL="https://${HF_USERNAME}:${HF_TOKEN}@huggingface.co/spaces/${HF_USERNAME}/${SPACE_NAME}"
+    TOKEN="$HF_TOKEN"
 else
-    # Check if logged in via CLI
+    # Try to get token from huggingface-cli
     if command -v huggingface-cli &> /dev/null; then
-        if huggingface-cli whoami &> /dev/null; then
-            HF_USER=$(huggingface-cli whoami | head -1)
-            echo "   ✅ Logged in as: ${HF_USER}"
-            GIT_URL="${SPACE_GIT_URL}"
+        # Check if logged in
+        if huggingface-cli whoami &> /dev/null 2>&1 || hf whoami &> /dev/null 2>&1; then
+            echo "   ✅ Logged in to HuggingFace"
+            # Try to get token from the token file
+            TOKEN_FILE="$HOME/.cache/huggingface/token"
+            if [ -f "$TOKEN_FILE" ]; then
+                TOKEN=$(cat "$TOKEN_FILE")
+                echo "   ✅ Found cached token"
+            else
+                echo "   ⚠️  Could not find cached token"
+                echo "   Please set HF_TOKEN environment variable"
+                exit 1
+            fi
         else
             echo "   ⚠️  Not logged in to HuggingFace"
             echo "   Please run: huggingface-cli login"
@@ -78,10 +87,36 @@ else
     else
         echo "   ⚠️  huggingface-cli not found"
         echo "   Please install: pip install huggingface_hub"
-        echo "   Or set HF_TOKEN environment variable"
         exit 1
     fi
 fi
+
+# Create the Space if it doesn't exist
+echo ""
+echo "📦 Creating Space repository (if needed)..."
+
+python3 << EOF
+from huggingface_hub import HfApi, create_repo
+import os
+
+api = HfApi()
+token = "${TOKEN}"
+
+try:
+    # Try to create the repo (will succeed if it doesn't exist)
+    create_repo(
+        repo_id="${SPACE_ID}",
+        repo_type="space",
+        space_sdk="gradio",
+        token=token,
+        exist_ok=True,
+        private=False
+    )
+    print("   ✅ Space repository ready")
+except Exception as e:
+    print(f"   ⚠️  Note: {e}")
+    print("   Continuing anyway...")
+EOF
 
 # Clean up any existing temp directory
 if [ -d "$TEMP_DIR" ]; then
@@ -90,25 +125,23 @@ if [ -d "$TEMP_DIR" ]; then
     rm -rf "$TEMP_DIR"
 fi
 
-# Try to clone existing space or create new one
+# Clone the space
 echo ""
-echo "📥 Setting up Spaces repository..."
+echo "📥 Cloning Spaces repository..."
 
 mkdir -p "$TEMP_DIR"
 cd "$TEMP_DIR"
 
-# Try to clone existing repo
+# Build git URL with token
+GIT_URL="https://${HF_USERNAME}:${TOKEN}@huggingface.co/spaces/${SPACE_ID}"
+
+# Clone the repo
 if git clone "$GIT_URL" . 2>/dev/null; then
-    echo "   ✅ Cloned existing Space"
+    echo "   ✅ Cloned Space"
 else
-    echo "   📝 Creating new Space repository..."
+    echo "   📝 Initializing new repository..."
     git init
     git remote add origin "$GIT_URL"
-    
-    # Create initial commit if needed
-    echo "# ${SPACE_NAME}" > README.md
-    git add README.md
-    git commit -m "Initial commit" 2>/dev/null || true
 fi
 
 # Copy files from spaces/ directory
