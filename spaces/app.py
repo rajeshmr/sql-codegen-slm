@@ -5,8 +5,10 @@ This app loads the fine-tuned LoRA adapters from HuggingFace Hub
 and generates PostgreSQL queries from natural language questions.
 """
 
+import spaces
 import gradio as gr
 import torch
+import sqlparse
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import PeftModel
 
@@ -131,6 +133,14 @@ Generate only the SQL query without any explanation. [/INST]"""
         sql = sql.split("</s>")[0].strip()
         sql = sql.split("[INST]")[0].strip()
         
+        # Format SQL for better readability
+        sql = sqlparse.format(
+            sql,
+            reindent=True,
+            keyword_case='upper',
+            indent_width=2
+        )
+        
         print(f"[DEBUG] Generated SQL: {sql[:100]}...")
         return sql
         
@@ -142,6 +152,7 @@ Generate only the SQL query without any explanation. [/INST]"""
         return f"Error: {str(e)}\n\nPlease check the logs for more details."
 
 
+@spaces.GPU(duration=120)
 def generate_sql(schema: str, question: str) -> str:
     """Generate SQL query from schema and natural language question."""
     return _generate_sql_impl(schema, question)
