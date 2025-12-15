@@ -62,17 +62,26 @@ def load_model():
 def generate_sql(schema: str, question: str) -> str:
     """Generate SQL query from schema and natural language question."""
     
-    if not schema.strip():
-        return "Error: Please provide a database schema."
-    
-    if not question.strip():
-        return "Error: Please provide a question."
-    
-    # Ensure model is loaded
-    load_model()
-    
-    # Format prompt using Mistral instruction template
-    prompt = f"""<s>[INST] You are a SQL expert. Given the following PostgreSQL database schema, write a SQL query that answers the user's question.
+    try:
+        if not schema.strip():
+            return "Error: Please provide a database schema."
+        
+        if not question.strip():
+            return "Error: Please provide a question."
+        
+        # Ensure model is loaded
+        print(f"[DEBUG] Starting generation...")
+        print(f"[DEBUG] Schema length: {len(schema)}, Question: {question[:50]}...")
+        load_model()
+        
+        if model is None:
+            return "Error: Model failed to load. Check logs for details."
+        
+        if tokenizer is None:
+            return "Error: Tokenizer failed to load. Check logs for details."
+        
+        # Format prompt using Mistral instruction template
+        prompt = f"""<s>[INST] You are a SQL expert. Given the following PostgreSQL database schema, write a SQL query that answers the user's question.
 
 Database Schema:
 {schema.strip()}
@@ -81,36 +90,55 @@ Question: {question.strip()}
 
 Generate only the SQL query without any explanation. [/INST]"""
 
-    # Tokenize
-    inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048)
-    inputs = {k: v.to(model.device) for k, v in inputs.items()}
-    
-    # Generate
-    with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=256,
-            temperature=0.1,
-            do_sample=True,
-            top_p=0.95,
-            pad_token_id=tokenizer.eos_token_id,
-            eos_token_id=tokenizer.eos_token_id
-        )
-    
-    # Decode and extract SQL
-    response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    
-    # Extract SQL after [/INST]
-    if "[/INST]" in response:
-        sql = response.split("[/INST]")[-1].strip()
-    else:
-        sql = response.strip()
-    
-    # Clean up any trailing content
-    sql = sql.split("</s>")[0].strip()
-    sql = sql.split("[INST]")[0].strip()
-    
-    return sql
+        print(f"[DEBUG] Prompt length: {len(prompt)} chars")
+        
+        # Tokenize
+        print(f"[DEBUG] Tokenizing...")
+        inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=2048)
+        print(f"[DEBUG] Input tokens: {inputs['input_ids'].shape}")
+        
+        # Move to device
+        print(f"[DEBUG] Model device: {model.device}")
+        inputs = {k: v.to(model.device) for k, v in inputs.items()}
+        
+        # Generate
+        print(f"[DEBUG] Generating...")
+        with torch.no_grad():
+            outputs = model.generate(
+                **inputs,
+                max_new_tokens=256,
+                temperature=0.1,
+                do_sample=True,
+                top_p=0.95,
+                pad_token_id=tokenizer.eos_token_id,
+                eos_token_id=tokenizer.eos_token_id
+            )
+        
+        print(f"[DEBUG] Output tokens: {outputs.shape}")
+        
+        # Decode and extract SQL
+        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+        print(f"[DEBUG] Response length: {len(response)} chars")
+        
+        # Extract SQL after [/INST]
+        if "[/INST]" in response:
+            sql = response.split("[/INST]")[-1].strip()
+        else:
+            sql = response.strip()
+        
+        # Clean up any trailing content
+        sql = sql.split("</s>")[0].strip()
+        sql = sql.split("[INST]")[0].strip()
+        
+        print(f"[DEBUG] Generated SQL: {sql[:100]}...")
+        return sql
+        
+    except Exception as e:
+        import traceback
+        error_msg = f"Error during generation: {str(e)}"
+        print(f"[ERROR] {error_msg}")
+        print(f"[ERROR] Traceback:\n{traceback.format_exc()}")
+        return f"Error: {str(e)}\n\nPlease check the logs for more details."
 
 
 # Example queries for the demo
