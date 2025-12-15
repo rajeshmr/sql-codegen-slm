@@ -8,6 +8,7 @@ sdk_version: 4.44.1
 app_file: app.py
 pinned: false
 license: apache-2.0
+suggested_hardware: t4-small
 ---
 
 # Text-to-SQL Generator

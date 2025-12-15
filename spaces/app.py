@@ -14,10 +14,9 @@ from peft import PeftModel
 BASE_MODEL = "mistralai/Mistral-7B-v0.1"
 LORA_MODEL = "rajeshmanikka/mistral-7b-text-to-sql"
 
-# Global model and tokenizer (loaded once)
+# Global model and tokenizer
 model = None
 tokenizer = None
-
 
 def load_model():
     """Load the model with 4-bit quantization and LoRA adapters."""
@@ -27,8 +26,11 @@ def load_model():
         return  # Already loaded
     
     print("Loading model... This may take a few minutes.")
+    print(f"CUDA available: {torch.cuda.is_available()}")
+    if torch.cuda.is_available():
+        print(f"GPU: {torch.cuda.get_device_name(0)}")
     
-    # Configure 4-bit quantization for memory efficiency
+    # Configure 4-bit quantization
     bnb_config = BitsAndBytesConfig(
         load_in_4bit=True,
         bnb_4bit_compute_dtype=torch.float16,
@@ -59,9 +61,8 @@ def load_model():
     print("Model loaded successfully!")
 
 
-def generate_sql(schema: str, question: str) -> str:
-    """Generate SQL query from schema and natural language question."""
-    
+def _generate_sql_impl(schema: str, question: str) -> str:
+    """Internal implementation of SQL generation."""
     try:
         if not schema.strip():
             return "Error: Please provide a database schema."
@@ -139,6 +140,11 @@ Generate only the SQL query without any explanation. [/INST]"""
         print(f"[ERROR] {error_msg}")
         print(f"[ERROR] Traceback:\n{traceback.format_exc()}")
         return f"Error: {str(e)}\n\nPlease check the logs for more details."
+
+
+def generate_sql(schema: str, question: str) -> str:
+    """Generate SQL query from schema and natural language question."""
+    return _generate_sql_impl(schema, question)
 
 
 # Example queries for the demo
@@ -320,5 +326,6 @@ if __name__ == "__main__":
     demo.launch(
         server_name="0.0.0.0",
         server_port=7860,
-        share=False
+        share=False,
+        show_error=True
     )
